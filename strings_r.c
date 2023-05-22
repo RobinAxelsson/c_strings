@@ -111,21 +111,7 @@ void str_reverse(char* string, char* reverse){
 }
 
 int str_sentence_count(const char* text) {
-    int sentenceCount = 0;
-
-    for (char* c = text; *c != '\0' ; c++) {
-        int isDelimiter = *c == '.' || *c == '!' || *c == '?';
-        if(isDelimiter){
-            sentenceCount++;
-            while(*(c + 1) == '.' || *(c + 1) == '!' || *(c + 1) == '?'){
-                if(*(c + 1) == '\0'){
-                    break;
-                }
-                c++;
-            }
-        }
-    }
-    return sentenceCount;
+    return str_split_count(text, ".!?\n");
 }
 
 char** doc_get_paragraphs(char* text){
@@ -166,10 +152,12 @@ int str_split_count(char* text, char* delimiters){
     char* txtPtr = text;
 
     while (*(txtPtr + 1) != '\0'){
-        int currentIsDelimiter = char_is_delimiter(*txtPtr, delimiters);
-        int nextIsDelimiter = char_is_delimiter(*(txtPtr + 1), delimiters);
+        char current = *txtPtr;
+        char next = *(txtPtr + 1);
+        int currentIsDelimiter = char_is_delimiter(current, delimiters);
+        int nextIsDelimiter = char_is_delimiter(next, delimiters);
 
-        if(!currentIsDelimiter && nextIsDelimiter){
+        if(currentIsDelimiter && !nextIsDelimiter){
             splits++;
         }
         txtPtr++;
