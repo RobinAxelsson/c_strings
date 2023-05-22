@@ -7,32 +7,38 @@
 
 int str_length(const char* string){
     int count = 0;
-    while(*string != '\0'){
-        string++;
-        count++;
-    }
+    for (char* c = string; *c != '\0'; c++) count++;
     return count;
 }
 
 int str_word_count(const char* text) {
     int wordCount = 0;
+    char last = ' ';
 
-    if(*text == '\0') return 0;
-
-    while (*text != '\0') {
-        if (*text == ' ' || *text == '\n') {
+    for (char* c = text; *c != '\0' ; c++) {
+        if(*c != ' ' && *c != '\n' && (last == ' ' || last == '\n'))
             wordCount++;
-        }
-        text++;
+        last = *c;
     }
-    wordCount++;
+
     return wordCount;
+}
+
+int str_paragraph_count(const char* text) {
+    int paraCount = 0;
+    char last = '\n';
+
+    for (char* c = text; *c != '\0' ; c++) {
+        if(*c != ' ' && *c != '\n' && (last == '\n'))
+            paraCount++;
+        last = *c;
+    }
+    return paraCount;
 }
 
 char* str_to_upper(const char* string){
     int length = str_length(string);
     char* newString = malloc(sizeof(char)* (length+1));
-
     if(newString == NULL){
         return NULL;
     }
@@ -120,9 +126,14 @@ void str_reverse(char* string, char* reverse){
     reverse[length + 1] = '\0';
 }
 
-char** doc_get_words(char* text, int wordCount){
-    char* textPtr = text;
+char*** doc_get_paragraphs(char* text){
+
+}
+
+char** doc_get_words(char* text){
+    int wordCount = str_word_count(text);
     char** words = malloc(sizeof(char*) * wordCount);
+    char* textPtr = text;
 
     for (int i = 0; i < wordCount; ++i) {
         while(*textPtr == ' ' || *textPtr == '\n') textPtr++;

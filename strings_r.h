@@ -9,13 +9,15 @@ int str_length(const char* string);
 
 int str_word_count(const char* text);
 
+int str_paragraph_count(const char* text);
+
 char* str_to_upper(const char* string);
 
 char* str_to_lower_copy(const char* string);
 
 void str_to_lower_in_place(char* string);
 
-char** doc_get_words(char* text, int wordCount);
+char** doc_get_words(char* text);
 
 int str_equal(char* strA, char* strB);
 

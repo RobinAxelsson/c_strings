@@ -66,7 +66,7 @@ void TestStrResult(FuncStr func, char* testName, void* data, char* expected, int
 void Test_doc_get_words(char* testName, int* tests, int* passed){
     (*tests)++;
 
-    char** result = doc_get_words("Hello world my friends", 4);
+    char** result = doc_get_words("Hello world my friends");
 
     char expected[4][10];
     str_copy( "Hello", expected[0]);
@@ -91,8 +91,10 @@ int main() {
     int passed = 0;
 
     TestIntResult((FuncInt) str_word_count, "count_words__3_words__3", "Hello counting words", 3, &tests, &passed);
-    TestIntResult((FuncInt) str_word_count, "count_words__5_words_newline__5", "Hello world!\nYou are great", 5, &tests,
-                  &passed);
+    TestIntResult((FuncInt) str_word_count, "count_words__5_words_newline__5", "Hello world!\nYou are great", 5, &tests, &passed);
+    TestIntResult((FuncInt) str_word_count, "count_words__5_words_extra_newline__5", "Hello world!\n\nYou are great", 5, &tests, &passed);
+    TestIntResult((FuncInt) str_paragraph_count, "count_para__4", "Hello!\nNew Para\nWhy\nGreat", 4, &tests, &passed);
+    TestIntResult((FuncInt) str_paragraph_count, "count_para__4_extra_newline", "Hello!\nNew Para\n\nWhy\nGreat", 4, &tests, &passed);
     TestIntResult((FuncInt) str_word_count, "count_words__0_words__0", "", 0, &tests, &passed);
     TestIntResult((FuncInt) str_length, "count_chars__words__5", "abcde", 5, &tests, &passed);
     TestIntResult((FuncInt) str_length, "count_chars__empty__5", "", 0, &tests, &passed);
