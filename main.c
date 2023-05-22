@@ -2,6 +2,8 @@
 #include <malloc.h>
 
 typedef void* (*Func)(void*);
+typedef void* (*FuncNoArgs)();
+
 
 int str_count(const char* string){
     int count = 0;
@@ -29,11 +31,15 @@ int str_word_count(const char* text) {
 
 char* str_to_upper(char* string){
     int length = str_count(string);
-    char* newString = malloc(sizeof(char)*length+1);
+    char* newString = malloc(sizeof(char)* (length+1));
+
+    if(newString == NULL){
+        return NULL;
+    }
 
     for (int i = 0; i < length; ++i) {
-        if(96 < string[i] && string[i] < 123 ){
-            newString[i] = string[i] - 32;
+        if('a' <= string[i] && string[i] <= 'z' ){
+            newString[i] = string[i] -'a' + 'A';
         }
         else newString[i] = string[i];
     }
@@ -42,24 +48,38 @@ char* str_to_upper(char* string){
     return newString;
 }
 
-char* str_to_lower(char* string){
+char* str_to_lower_copy(char* string){
     int length = str_count(string);
-    char* newString = malloc(sizeof(char)*length+1);
+    char* newString = malloc(sizeof(char)* (length+1));
+
+    if(newString == NULL){
+        return NULL;
+    }
 
     for (int i = 0; i < length; ++i) {
-        if(64 < string[i] && string[i] < 91 ){
-            newString[i] = string[i] + 32;
+        if('A' < string[i] && string[i] < 'Z' ){
+            newString[i] = string[i] + 'a' - 'A';
         }
         else newString[i] = string[i];
     }
     newString[length] = '\0';
 
     return newString;
+}
+
+void str_to_lower_in_place(char* string){
+    int length = str_count(string);
+
+    for (int i = 0; i < length; ++i) {
+        if('A' <= string[i] && string[i] <= 'Z'){
+            string[i] = string[i] + 'a' - 'A';
+        }
+    }
 }
 
 int str_equal(char* strA, char* strB){
     if(strA == strB) return 1;
-    if(*strA == '\n' && *strB == '\n') return 1;
+    if(*strA == '\0' && *strB == '\0') return 1;
     int count = str_count(strA);
     if(count != str_count(strB)) return 0;
 
@@ -69,6 +89,69 @@ int str_equal(char* strA, char* strB){
         }
     }
     return 1;
+}
+
+void str_copy(char* source, char* target){
+    char* targetPtr = target;
+    char* sourcePtr = source;
+    do {
+        *targetPtr = *sourcePtr;
+        targetPtr++;
+        sourcePtr++;
+    } while(*sourcePtr != '\0');
+
+    *targetPtr = '\0';
+}
+
+void str_reverse(char* string, char* reverse){
+    int length = str_count(string);
+    int swaps = length / 2;
+
+    if(length % 2 == 1){
+        reverse[swaps] = string[swaps];
+    }
+
+    for (int i = 0; i < swaps; ++i) {
+        char start = string[i];
+        char end = string[length - i - 1];
+        reverse[i] = end;
+        reverse[length - i - 1] = start;
+    }
+    reverse[length + 1] = '\0';
+}
+
+int test_str_copy_hello(){
+    char* source = "Hello";
+    char target[6];
+    str_copy(source, target);
+    return str_equal(source, target);
+}
+
+int test_str_copy_hell(){
+    char* source = "Hell";
+    char target[6];
+    str_copy(source, target);
+    return str_equal(source, target);
+}
+
+int test_str_reverse_Abc(){
+    char* source = "Abc";
+    char target[4];
+    str_reverse(source, target);
+    return str_equal("cbA", target);
+}
+
+
+void TestBoolResult(FuncNoArgs func, char* testName, int expectedBool, int* tests, int* passed){
+    (*tests)++;
+
+    int result = (int)func();
+    if(expectedBool == result){
+        (*passed)++;
+    }
+    else{
+        printf("Fail: %s, expectedBool: %d, result: %d\n", testName, expectedBool, result);
+    }
 }
 
 void TestIntResult(Func func, char* testName, void* data, int expected, int* tests, int* passed){
@@ -109,7 +192,11 @@ int main() {
     TestStrResult((Func)str_to_upper, "to upper 1","HELLO WORLD", "HELLO WORLD", &tests, &passed);
     TestStrResult((Func)str_to_upper, "to upper 2","hello world", "HELLO WORLD", &tests, &passed);
     TestStrResult((Func)str_to_upper, "to upper 3","hello !Wld...", "HELLO !WLD...", &tests, &passed);
-    TestStrResult((Func)str_to_lower, "to lower 1","Hello !Wld...", "hello !wld...", &tests, &passed);
+    TestStrResult((Func)str_to_lower_copy, "to lower 1","Hello !Wld...", "hello !wld...", &tests, &passed);
+
+    TestBoolResult((FuncNoArgs) test_str_copy_hello, "str_copy 1", 1, &tests, &passed);
+    TestBoolResult((FuncNoArgs) test_str_copy_hell, "str_copy 2", 1, &tests, &passed);
+    TestBoolResult((Func) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
     printf("%d/%d tests passed", passed, tests);
     return 0;
 }
