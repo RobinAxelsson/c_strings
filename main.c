@@ -63,6 +63,29 @@ void TestStrResult(FuncStr func, char* testName, void* data, char* expected, int
     }
 }
 
+void Test_doc_get_words(char* testName, int* tests, int* passed){
+    (*tests)++;
+
+    char** result = doc_get_words("Hello world my friends", 4);
+
+    char expected[4][10];
+    str_copy( "Hello", expected[0]);
+    str_copy("world", expected[1]);
+    str_copy("my", expected[2]);
+    str_copy("friends", expected[3]);
+
+    int failed = 0;
+    for (int i = 0; i < 4; ++i) {
+        if(!str_equal(result[i], expected[i])) failed = 1;
+    }
+    if(failed){
+        printf("Fail: %s\n", testName);
+    }
+    else{
+        (*passed)++;
+    }
+}
+
 int main() {
     int tests = 0;
     int passed = 0;
@@ -71,8 +94,8 @@ int main() {
     TestIntResult((FuncInt) str_word_count, "count_words__5_words_newline__5", "Hello world!\nYou are great", 5, &tests,
                   &passed);
     TestIntResult((FuncInt) str_word_count, "count_words__0_words__0", "", 0, &tests, &passed);
-    TestIntResult((FuncInt) str_count, "count_chars__words__5", "abcde", 5, &tests, &passed);
-    TestIntResult((FuncInt) str_count, "count_chars__empty__5", "", 0, &tests, &passed);
+    TestIntResult((FuncInt) str_length, "count_chars__words__5", "abcde", 5, &tests, &passed);
+    TestIntResult((FuncInt) str_length, "count_chars__empty__5", "", 0, &tests, &passed);
 
     TestStrResult((FuncStr)str_to_upper, "to upper 1","HELLO WORLD", "HELLO WORLD", &tests, &passed);
     TestStrResult((FuncStr)str_to_upper, "to upper 2","hello world", "HELLO WORLD", &tests, &passed);
@@ -82,6 +105,10 @@ int main() {
     TestBoolResult((FuncNoArgs) test_str_copy_hello, "str_copy 1", 1, &tests, &passed);
     TestBoolResult((FuncNoArgs) test_str_copy_hell, "str_copy 2", 1, &tests, &passed);
     TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
+
+    TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
+
+    Test_doc_get_words("get words", &tests, &passed);
     printf("%d/%d tests passed", passed, tests);
     return 0;
 }

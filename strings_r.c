@@ -5,7 +5,7 @@
 #include "strings_r.h"
 #include <stdlib.h>
 
-int str_count(const char* string){
+int str_length(const char* string){
     int count = 0;
     while(*string != '\0'){
         string++;
@@ -30,7 +30,7 @@ int str_word_count(const char* text) {
 }
 
 char* str_to_upper(const char* string){
-    int length = str_count(string);
+    int length = str_length(string);
     char* newString = malloc(sizeof(char)* (length+1));
 
     if(newString == NULL){
@@ -49,7 +49,7 @@ char* str_to_upper(const char* string){
 }
 
 char* str_to_lower_copy(const char* string){
-    int length = str_count(string);
+    int length = str_length(string);
     char* newString = malloc(sizeof(char)* (length+1));
 
     if(newString == NULL){
@@ -68,7 +68,7 @@ char* str_to_lower_copy(const char* string){
 }
 
 void str_to_lower_in_place(char* string){
-    int length = str_count(string);
+    int length = str_length(string);
 
     for (int i = 0; i < length; ++i) {
         if('A' <= string[i] && string[i] <= 'Z'){
@@ -80,8 +80,8 @@ void str_to_lower_in_place(char* string){
 int str_equal(char* strA, char* strB){
     if(strA == strB) return 1;
     if(*strA == '\0' && *strB == '\0') return 1;
-    int count = str_count(strA);
-    if(count != str_count(strB)) return 0;
+    int count = str_length(strA);
+    if(count != str_length(strB)) return 0;
 
     for (int i = 0; i < count; ++i) {
         if(strA[i] != strB[i]){
@@ -104,7 +104,7 @@ void str_copy(char* source, char* target){
 }
 
 void str_reverse(char* string, char* reverse){
-    int length = str_count(string);
+    int length = str_length(string);
     int swaps = length / 2;
 
     if(length % 2 == 1){
@@ -119,3 +119,28 @@ void str_reverse(char* string, char* reverse){
     }
     reverse[length + 1] = '\0';
 }
+
+char** doc_get_words(char* text, int wordCount){
+    char* textPtr = text;
+    char** words = malloc(sizeof(char*) * wordCount);
+
+    for (int i = 0; i < wordCount; ++i) {
+        while(*textPtr == ' ' || *textPtr == '\n') textPtr++;
+        if(*textPtr == '\0') break;
+
+        char* w_start = textPtr;
+        char* w_end = textPtr;
+        while(*textPtr != ' ' && *textPtr != '\n'){
+            w_end++;
+            textPtr++;
+        }
+        int length = w_end - w_start;
+        words[i] = malloc(sizeof(char) * (length + 1));
+        for (int j = 0; j < length; ++j) {
+            words[i][j] = *(w_start + j);
+        }
+        words[i][length] = '\0';
+    }
+
+    return words;
+};
