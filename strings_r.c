@@ -5,6 +5,50 @@
 #include "strings_r.h"
 #include <stdlib.h>
 
+int str_split_count(char* text, char* delimiters){
+    if(*text == '\0' || text == NULL) return 0;
+    int splits = 1;
+    char* txtPtr = text;
+
+    while (*(txtPtr + 1) != '\0'){
+        char current = *txtPtr;
+        char next = *(txtPtr + 1);
+        int currentIsDelimiter = char_is_delimiter(current, delimiters);
+        int nextIsDelimiter = char_is_delimiter(next, delimiters);
+
+        if(currentIsDelimiter && !nextIsDelimiter){
+            splits++;
+        }
+        txtPtr++;
+    }
+    return splits;
+}
+
+char** str_splitr(char* text, char* delimiters){
+    int splitLength = str_split_count(text, delimiters);
+    char* txtPtr = text;
+    char** substrings = malloc(sizeof(char*) * splitLength);
+
+    for (int i = 0; i < splitLength; ++i) {
+        int length = 0;
+        while(char_is_delimiter(*txtPtr, delimiters) && *txtPtr != '\0'){
+            txtPtr++;
+        }
+        char* start = txtPtr;
+        while(!char_is_delimiter(*txtPtr, delimiters) && *txtPtr != '\0'){
+            length++;
+            txtPtr++;
+        }
+        substrings[i] = malloc(sizeof(char) * (length + 1));
+
+        for (int j = 0; j < length; ++j) {
+            substrings[i][j] = *(start + j);
+        }
+        substrings[i][length] = '\0';
+    }
+    return substrings;
+}
+
 int str_length(const char* string){
     int count = 0;
     for (char* c = string; *c != '\0'; c++) count++;
@@ -115,28 +159,7 @@ int str_sentence_count(const char* text) {
 }
 
 char** doc_get_paragraphs(char* text){
-    int paragraphCount = str_paragraph_count(text);
-    char** paragraphs = malloc(sizeof(char*) * paragraphCount);
-    char* textPtr = text;
-
-    for (int i = 0; i < paragraphCount; ++i) {
-        while(*textPtr == '\n') textPtr++;
-        if(*textPtr == '\0') break;
-
-        char* w_start = textPtr;
-        char* w_end = textPtr;
-        while(*textPtr != '\n' && *textPtr != '\0'){
-            textPtr++;
-            w_end++;
-        }
-        int length = w_end - w_start;
-        paragraphs[i] = malloc(sizeof(char) * (length + 1));
-        for (int j = 0; j < length; ++j) {
-            paragraphs[i][j] = *(w_start + j);
-        }
-        paragraphs[i][length] = '\0';
-    }
-    return paragraphs;
+    return str_splitr(text, "\n");
 }
 
 int char_is_delimiter(char character, char* delimiters){
@@ -146,71 +169,6 @@ int char_is_delimiter(char character, char* delimiters){
     return 0;
 }
 
-int str_split_count(char* text, char* delimiters){
-    if(*text == '\0' || text == NULL) return 0;
-    int splits = 1;
-    char* txtPtr = text;
-
-    while (*(txtPtr + 1) != '\0'){
-        char current = *txtPtr;
-        char next = *(txtPtr + 1);
-        int currentIsDelimiter = char_is_delimiter(current, delimiters);
-        int nextIsDelimiter = char_is_delimiter(next, delimiters);
-
-        if(currentIsDelimiter && !nextIsDelimiter){
-            splits++;
-        }
-        txtPtr++;
-    }
-    return splits;
-}
-
-char** str_split(char* text, char* delimiters){
-    int splitLength = str_split_count(text, delimiters);
-    char* txtPtr = text;
-    char** substrings = malloc(sizeof(char*) * splitLength);
-
-    for (int i = 0; i < splitLength; ++i) {
-        int length = 0;
-        while(char_is_delimiter(*txtPtr, delimiters)){
-            txtPtr++;
-        }
-        char* start = txtPtr;
-        while(!char_is_delimiter(*txtPtr, delimiters)){
-            length++;
-        }
-        substrings[i] = malloc(sizeof(char) * length);
-
-        for (int j = 0; j < length; ++j) {
-            substrings[i][j] = *(start + j);
-        }
-        substrings[i][length] = '\0';
-    }
-    return substrings;
-}
-
 char** doc_get_words(const char* text){
-    int wordCount = str_word_count(text);
-    char** words = malloc(sizeof(char**) * wordCount);
-    char* textPtr = text;
-
-    for (int i = 0; i < wordCount; ++i) {
-        while(*textPtr == ' ' || *textPtr == '\n') textPtr++;
-        if(*textPtr == '\0') break;
-
-        char* w_start = textPtr;
-        char* w_end = textPtr;
-        while(*textPtr != ' ' && *textPtr != '\n' && *textPtr != '\0'){
-            w_end++;
-            textPtr++;
-        }
-        int length = w_end - w_start;
-        words[i] = malloc(sizeof(char) * (length + 1));
-        for (int j = 0; j < length; ++j) {
-            words[i][j] = *(w_start + j);
-        }
-        words[i][length] = '\0';
-    }
-
-    return words;
+    return str_splitr(text, " ");
 };
