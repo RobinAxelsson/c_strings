@@ -165,6 +165,30 @@ int str_split_count(char* text, char* delimiters){
     return splits;
 }
 
+char** str_split(char* text, char* delimiters){
+    int splitLength = str_split_count(text, delimiters);
+    char* txtPtr = text;
+    char** substrings = malloc(sizeof(char*) * splitLength);
+
+    for (int i = 0; i < splitLength; ++i) {
+        int length = 0;
+        while(char_is_delimiter(*txtPtr, delimiters)){
+            txtPtr++;
+        }
+        char* start = txtPtr;
+        while(!char_is_delimiter(*txtPtr, delimiters)){
+            length++;
+        }
+        substrings[i] = malloc(sizeof(char) * length);
+
+        for (int j = 0; j < length; ++j) {
+            substrings[i][j] = *(start + j);
+        }
+        substrings[i][length] = '\0';
+    }
+    return substrings;
+}
+
 char** doc_get_words(const char* text){
     int wordCount = str_word_count(text);
     char** words = malloc(sizeof(char**) * wordCount);
