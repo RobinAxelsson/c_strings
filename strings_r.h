@@ -17,7 +17,9 @@ char* str_to_upper(const char* string);
 
 char* str_to_lower_copy(const char* string);
 
-int str_contains(char character, char* string);
+int char_is_delimiter(char character, char* delimiters);
+
+int str_split_count(char* text, char* delimiters);
 
 void str_to_lower_in_place(char* string);
 

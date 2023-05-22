@@ -105,11 +105,11 @@ void Test_doc_contains(char* testName, int* tests, int* passed){
 
     char character = '!';
     char string[] = ".!.";
-    int result = str_contains(character, string);
+    int result = char_is_delimiter(character, string);
 
     char character1 = '!';
     char string1[] = "...";
-    int result1 = str_contains(character1, string1);
+    int result1 = char_is_delimiter(character1, string1);
 
     if(result && !result1){
         (*passed)++;

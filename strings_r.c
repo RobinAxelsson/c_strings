@@ -12,28 +12,11 @@ int str_length(const char* string){
 }
 
 int str_word_count(const char* text) {
-    int wordCount = 0;
-    char last = ' ';
-
-    for (char* c = text; *c != '\0' ; c++) {
-        if(*c != ' ' && *c != '\n' && (last == ' ' || last == '\n'))
-            wordCount++;
-        last = *c;
-    }
-
-    return wordCount;
+    return str_split_count(text, " \n");
 }
 
 int str_paragraph_count(const char* text) {
-    int paraCount = 0;
-    char last = '\n';
-
-    for (char* c = text; *c != '\0' ; c++) {
-        if(*c != ' ' && *c != '\n' && (last == '\n'))
-            paraCount++;
-        last = *c;
-    }
-    return paraCount;
+    return str_split_count(text, "\n");
 }
 
 
@@ -170,22 +153,28 @@ char** doc_get_paragraphs(char* text){
     return paragraphs;
 }
 
-int str_contains(char character, char* string){
-    for (char* c = string; *c != '\0' ; c++) {
+int char_is_delimiter(char character, char* delimiters){
+    for (char* c = delimiters; *c != '\0' ; c++) {
         if(character == *c) return 1;
     }
     return 0;
 }
 
-char** str_split(char* text, char* delimiters){
-    int splits = 0;
+int str_split_count(char* text, char* delimiters){
+    if(*text == '\0' || text == NULL) return 0;
+    int splits = 1;
     char* txtPtr = text;
-    char* innerStart = NULL;
-    char* innerEnd = NULL;
 
-    while (*txtPtr != '\0'){
+    while (*(txtPtr + 1) != '\0'){
+        int currentIsDelimiter = char_is_delimiter(*txtPtr, delimiters);
+        int nextIsDelimiter = char_is_delimiter(*(txtPtr + 1), delimiters);
 
+        if(!currentIsDelimiter && nextIsDelimiter){
+            splits++;
+        }
+        txtPtr++;
     }
+    return splits;
 }
 
 char** doc_get_words(const char* text){
