@@ -17,9 +17,13 @@ char* str_to_upper(const char* string);
 
 char* str_to_lower_copy(const char* string);
 
+int str_contains(char character, char* string);
+
 void str_to_lower_in_place(char* string);
 
-char** doc_get_words(char* text);
+char** doc_get_words(const char* text);
+
+char** doc_get_paragraphs(char* text);
 
 int str_equal(char* strA, char* strB);
 

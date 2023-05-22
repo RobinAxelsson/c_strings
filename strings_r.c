@@ -36,23 +36,6 @@ int str_paragraph_count(const char* text) {
     return paraCount;
 }
 
-int str_sentence_count(const char* text) {
-    int sentenceCount = 0;
-
-    for (char* c = text; *c != '\0' ; c++) {
-        int isDelimiter = *c == '.' || *c == '!' || *c == '?';
-        if(isDelimiter){
-            sentenceCount++;
-            while(*(c + 1) == '.' || *(c + 1) == '!' || *(c + 1) == '?'){
-                if(*(c + 1) == '\0'){
-                    break;
-                }
-                c++;
-            }
-        }
-    }
-    return sentenceCount;
-}
 
 char* str_to_upper(const char* string){
     int length = str_length(string);
@@ -144,12 +127,70 @@ void str_reverse(char* string, char* reverse){
     reverse[length + 1] = '\0';
 }
 
-char*** doc_get_sentences(char* text){
+int str_sentence_count(const char* text) {
+    int sentenceCount = 0;
+
+    for (char* c = text; *c != '\0' ; c++) {
+        int isDelimiter = *c == '.' || *c == '!' || *c == '?';
+        if(isDelimiter){
+            sentenceCount++;
+            while(*(c + 1) == '.' || *(c + 1) == '!' || *(c + 1) == '?'){
+                if(*(c + 1) == '\0'){
+                    break;
+                }
+                c++;
+            }
+        }
+    }
+    return sentenceCount;
 }
 
-char** doc_get_words(char* text){
+char** doc_get_paragraphs(char* text){
+    int paragraphCount = str_paragraph_count(text);
+    char** paragraphs = malloc(sizeof(char*) * paragraphCount);
+    char* textPtr = text;
+
+    for (int i = 0; i < paragraphCount; ++i) {
+        while(*textPtr == '\n') textPtr++;
+        if(*textPtr == '\0') break;
+
+        char* w_start = textPtr;
+        char* w_end = textPtr;
+        while(*textPtr != '\n' && *textPtr != '\0'){
+            textPtr++;
+            w_end++;
+        }
+        int length = w_end - w_start;
+        paragraphs[i] = malloc(sizeof(char) * (length + 1));
+        for (int j = 0; j < length; ++j) {
+            paragraphs[i][j] = *(w_start + j);
+        }
+        paragraphs[i][length] = '\0';
+    }
+    return paragraphs;
+}
+
+int str_contains(char character, char* string){
+    for (char* c = string; *c != '\0' ; c++) {
+        if(character == *c) return 1;
+    }
+    return 0;
+}
+
+char** str_split(char* text, char* delimiters){
+    int splits = 0;
+    char* txtPtr = text;
+    char* innerStart = NULL;
+    char* innerEnd = NULL;
+
+    while (*txtPtr != '\0'){
+
+    }
+}
+
+char** doc_get_words(const char* text){
     int wordCount = str_word_count(text);
-    char** words = malloc(sizeof(char*) * wordCount);
+    char** words = malloc(sizeof(char**) * wordCount);
     char* textPtr = text;
 
     for (int i = 0; i < wordCount; ++i) {
@@ -158,7 +199,7 @@ char** doc_get_words(char* text){
 
         char* w_start = textPtr;
         char* w_end = textPtr;
-        while(*textPtr != ' ' && *textPtr != '\n'){
+        while(*textPtr != ' ' && *textPtr != '\n' && *textPtr != '\0'){
             w_end++;
             textPtr++;
         }

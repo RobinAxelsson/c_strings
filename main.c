@@ -86,7 +86,41 @@ void Test_doc_get_words(char* testName, int* tests, int* passed){
     }
 }
 
+void Test_doc_get_paragraphs(char* testName, int* tests, int* passed){
+    (*tests)++;
+
+    char hello[] = "Hello\nworld";
+    char** result = doc_get_paragraphs(hello);
+
+    if(str_equal(result[0], "Hello") && str_equal(result[1], "world")){
+        (*passed)++;
+    }
+    else{
+        printf("Fail: %s\n", testName);
+    }
+}
+
+void Test_doc_contains(char* testName, int* tests, int* passed){
+    (*tests)++;
+
+    char character = '!';
+    char string[] = ".!.";
+    int result = str_contains(character, string);
+
+    char character1 = '!';
+    char string1[] = "...";
+    int result1 = str_contains(character1, string1);
+
+    if(result && !result1){
+        (*passed)++;
+    }
+    else{
+        printf("Fail: %s\n", testName);
+    }
+}
+
 int main() {
+
     int tests = 0;
     int passed = 0;
 
@@ -97,6 +131,7 @@ int main() {
     TestIntResult((FuncInt) str_sentence_count, "count_sentence__!!!!", "Hello. world!!!!!!!!!!!!!!!!!!\n\nYou are great?", 3, &tests, &passed);
     TestIntResult((FuncInt) str_paragraph_count, "count_para__4", "Hello!\nNew Para\nWhy\nGreat", 4, &tests, &passed);
     TestIntResult((FuncInt) str_paragraph_count, "count_para__4_extra_newline", "Hello!\nNew Para\n\nWhy\nGreat", 4, &tests, &passed);
+    TestIntResult((FuncInt) str_paragraph_count, "count_para__4_extra_newline", "Hello\nworld", 2, &tests, &passed);
     TestIntResult((FuncInt) str_word_count, "count_words__0_words__0", "", 0, &tests, &passed);
     TestIntResult((FuncInt) str_length, "count_chars__words__5", "abcde", 5, &tests, &passed);
     TestIntResult((FuncInt) str_length, "count_chars__empty__5", "", 0, &tests, &passed);
@@ -113,6 +148,8 @@ int main() {
     TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
 
     Test_doc_get_words("get words", &tests, &passed);
+    Test_doc_get_paragraphs("get paragraphs", &tests, &passed);
+    Test_doc_contains("contains 1", &tests, &passed);
     printf("%d/%d tests passed", passed, tests);
     return 0;
 }
