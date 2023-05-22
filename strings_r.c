@@ -36,6 +36,24 @@ int str_paragraph_count(const char* text) {
     return paraCount;
 }
 
+int str_sentence_count(const char* text) {
+    int sentenceCount = 0;
+
+    for (char* c = text; *c != '\0' ; c++) {
+        int isDelimiter = *c == '.' || *c == '!' || *c == '?';
+        if(isDelimiter){
+            sentenceCount++;
+            while(*(c + 1) == '.' || *(c + 1) == '!' || *(c + 1) == '?'){
+                if(*(c + 1) == '\0'){
+                    break;
+                }
+                c++;
+            }
+        }
+    }
+    return sentenceCount;
+}
+
 char* str_to_upper(const char* string){
     int length = str_length(string);
     char* newString = malloc(sizeof(char)* (length+1));
@@ -126,8 +144,7 @@ void str_reverse(char* string, char* reverse){
     reverse[length + 1] = '\0';
 }
 
-char*** doc_get_paragraphs(char* text){
-
+char*** doc_get_sentences(char* text){
 }
 
 char** doc_get_words(char* text){

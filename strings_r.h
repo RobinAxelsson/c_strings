@@ -11,6 +11,8 @@ int str_word_count(const char* text);
 
 int str_paragraph_count(const char* text);
 
+int str_sentence_count(const char* text);
+
 char* str_to_upper(const char* string);
 
 char* str_to_lower_copy(const char* string);
