@@ -21,7 +21,7 @@ int char_is_delimiter(char character, char* delimiters);
 
 int str_split_count(char* text, char* delimiters);
 
-char** str_splitr(char* text, char* delimiters);
+char**** get_document(char* text);
 
 void str_to_lower_in_place(char* string);
 

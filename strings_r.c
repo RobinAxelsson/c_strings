@@ -24,18 +24,19 @@ int str_split_count(char* text, char* delimiters){
     return splits;
 }
 
-char** str_splitr(char* text, char* delimiters){
+char** str_splitr(const char* text, char* delimiters, char terminator){
     int splitLength = str_split_count(text, delimiters);
     char* txtPtr = text;
-    char** substrings = malloc(sizeof(char*) * splitLength);
+    char** substrings = malloc(sizeof(char*) * (splitLength + 1));
+    substrings[splitLength] = NULL;
 
     for (int i = 0; i < splitLength; ++i) {
         int length = 0;
-        while(char_is_delimiter(*txtPtr, delimiters) && *txtPtr != '\0'){
+        while(char_is_delimiter(*txtPtr, delimiters) && *txtPtr != terminator){
             txtPtr++;
         }
         char* start = txtPtr;
-        while(!char_is_delimiter(*txtPtr, delimiters) && *txtPtr != '\0'){
+        while(!char_is_delimiter(*txtPtr, delimiters) && *txtPtr != terminator){
             length++;
             txtPtr++;
         }
@@ -46,7 +47,46 @@ char** str_splitr(char* text, char* delimiters){
         }
         substrings[i][length] = '\0';
     }
+
     return substrings;
+}
+
+char**** get_document(char* text){
+    char**** document;
+    char** newlineSplit = str_splitr(text, "\n", '\0');
+    int p_length = 0;
+    for (char** cpp = newlineSplit; *cpp != NULL ; cpp++) p_length++;
+    document = malloc(sizeof(char***) * (p_length + 1));
+    document[p_length] = NULL;
+
+
+    for (int i = 0; i < p_length; ++i) {
+        char** dotSplit = str_splitr(newlineSplit[i], ".!?\n", '\0');
+        int s_length = 0;
+        for (char** cpp = dotSplit; *cpp != NULL ; cpp++) s_length++;
+        document[i] = malloc(sizeof(char**) * (s_length + 1));
+        document[i][s_length] = NULL;
+
+        for (int j = 0; j < s_length; ++j) {
+            char** words = str_splitr(newlineSplit[i], " ", '\0');
+            int w_length = 0;
+            for (char** cpp = dotSplit; *cpp != NULL ; cpp++) w_length++;
+            document[i][j] = malloc(sizeof(char*) * (w_length + 1));
+            document[i][j][s_length] = NULL;
+
+            for (int k = 0; k < w_length; ++k) {
+                int length = str_length(words[k]);
+                document[i][j][k] = malloc(sizeof(char) * (length + 1));
+                str_copy(words[k], document[i][j][k]);
+                free(words[k]);
+            }
+            free(words);
+        }
+        free(dotSplit);
+    }
+    free(newlineSplit);
+
+    return document;
 }
 
 int str_length(const char* string){
@@ -159,7 +199,7 @@ int str_sentence_count(const char* text) {
 }
 
 char** doc_get_paragraphs(char* text){
-    return str_splitr(text, "\n");
+    return str_splitr(text, "\n", '\0');
 }
 
 int char_is_delimiter(char character, char* delimiters){
@@ -170,5 +210,5 @@ int char_is_delimiter(char character, char* delimiters){
 }
 
 char** doc_get_words(const char* text){
-    return str_splitr(text, " ");
+    return str_splitr(text, " ", '\0');
 };
