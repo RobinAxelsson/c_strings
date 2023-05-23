@@ -23,6 +23,8 @@ int str_split_count(char* text, char* delimiters);
 
 char**** get_document(char* text);
 
+char*** get_sentences(char* text);
+
 void str_to_lower_in_place(char* string);
 
 char** doc_get_words(const char* text);

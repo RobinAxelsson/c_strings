@@ -129,7 +129,7 @@ void test_str_equal(char* expected, char* result, char* name, int* tests, int* p
     }
 }
 
-void Test_doc_structure(char* testName, int* tests, int* passed){
+void Test_doc_structure(int* tests, int* passed){
 
     char* text = "Hello world! Hey globe!\nParagraph: nice!";
     char**** result = get_document(text);
@@ -140,6 +140,23 @@ void Test_doc_structure(char* testName, int* tests, int* passed){
     // test_str_equal("nice!", result[1][0][1], "doc structure 0p 2s 0w", tests, passed); //runtime error
     // test_str_equal("Hey", result[0][1][0], "doc structure 0p 2s 0w", tests, passed); //outputs hello
     // test_str_equal("globe!", result[0][1][1], "doc structure 0p 2s 0w", tests, passed); //outputs world
+}
+
+void Test_get_sentence(int* tests, int* passed){
+
+    char* text = "Hello world! Hey bro!";
+    char*** result = get_sentences(text);
+    char** sentence0 = result[0];
+    char** sentence1 = result[1];
+    char* word0 = sentence0[0];
+    char* word1 = sentence0[1];
+    char* word2 = sentence1[0];
+    char* word3 = sentence1[1];
+
+    test_str_equal("Hello", word0, "doc structure 1", tests, passed);
+    test_str_equal("world", word1, "doc structure 2", tests, passed);
+    test_str_equal("Hey", word2, "doc structure 0p 2s 0w", tests, passed);
+    test_str_equal("bro", word3, "doc structure 0p 2s 0w", tests, passed);
 }
 
 
@@ -175,7 +192,8 @@ int main() {
     Test_doc_get_words("get words", &tests, &passed);
     Test_doc_get_paragraphs("get paragraphs", &tests, &passed);
     Test_doc_contains("contains 1", &tests, &passed);
-    Test_doc_structure("document 1", &tests, &passed);
+    //Test_doc_structure(&tests, &passed);
+    Test_get_sentence(&tests, &passed);
     printf("%d/%d tests passed", passed, tests);
     return 0;
 }

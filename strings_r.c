@@ -57,22 +57,21 @@ char*** get_sentences(char* text){
     int s_length = 0;
     for (char** cpp = dotSplit; *cpp != NULL ; cpp++) s_length++;
 
-    sentenceList = malloc(sizeof(char*)*(s_length +1));
+    sentenceList = malloc(sizeof(char**)*(s_length +1));
     sentenceList[s_length] = NULL;
 
     for (int i = 0; i < s_length; ++i) {
-        char** currentSentence = sentenceList[i];
         char** wordSplit = str_splitr(dotSplit[i], " \n", '\0');
         int w_count = 0;
         for (char** cpp = wordSplit; *cpp != NULL ; cpp++) w_count++;
-        currentSentence = malloc(sizeof(char*)* (w_count + 1));
-        currentSentence[w_count] = NULL;
+        sentenceList[i] = malloc(sizeof(char*)* (w_count + 1));
+        sentenceList[i][w_count] = NULL;
 
         for (int j = 0; j < w_count; ++j) {
             char* currentWord = wordSplit[j];
             int wordLength = str_length(currentWord);
-            currentSentence[j] = malloc(sizeof(char) * (wordLength + 1));
-            str_copy(currentWord, currentSentence[j]);
+            sentenceList[i][j] = malloc(sizeof(char) * (wordLength + 1));
+            str_copy(currentWord, sentenceList[i][j]);
         }
     }
 
