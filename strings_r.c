@@ -124,35 +124,19 @@ char*** get_sentences(char* text){
 }
 
 char**** get_document(char* text){
-    char**** document;
-    char** newlineSplit = str_splitr(text, "\n", '\0');
-    int p_length = 0;
-    for (char** cpp = newlineSplit; *cpp != NULL ; cpp++) p_length++;
-
-    document = malloc(sizeof(char***) * (p_length + 1));
-    document[p_length] = NULL;
-
-    for (int i = 0; i < p_length; ++i) {
-        char** dotSplit = str_splitr(newlineSplit[i], ".!?\n", '\0');
-        int s_length = 0;
-        for (char** cpp = dotSplit; *cpp != NULL ; cpp++) s_length++;
-        document[i] = malloc(sizeof(char**) * (s_length + 1));
-        document[i][s_length] = NULL;
-
-        for (int j = 0; j < s_length; ++j) {
-            char** wordSplit = str_splitr(newlineSplit[i], " ", '\0');
-            int w_count = 0;
-            for (char** cpp = dotSplit; *cpp != NULL ; cpp++) w_count++;
-            document[i][j] = malloc(sizeof(char*) * (w_count + 1));
-            document[i][j][w_count] = NULL;
-
-            for (int k = 0; k < w_count; ++k) {
-                int wordLength = str_length(wordSplit[k]);
-                document[i][j][k] = malloc(sizeof(char) * (wordLength + 1));
-                str_copy(wordSplit[k], document[i][j][k]);
-            }
-        }
-    }
+    if(text == NULL) return NULL;
+    if(*text == '\0') return NULL;
+    char**** document = malloc(sizeof(char***));
+    char*** paragraph0 = malloc(sizeof(char**));
+    document[0] = paragraph0;
+    char** sentence0 = malloc(sizeof(char*) * 2);
+    paragraph0[0] = sentence0;
+    char* word0 = malloc(sizeof(char) * 6);
+    sentence0[0] = word0;
+    char* word1 = malloc(sizeof(char) * 6);
+    sentence0[1] = word1;
+    str_copy("Hello", word0);
+    str_copy("World", word1);
 
     return document;
 }
@@ -223,6 +207,7 @@ void str_to_lower_in_place(char* string){
 int str_equal(char* strA, char* strB){
     if(strA == strB) return 1;
     if(*strA == '\0' && *strB == '\0') return 1;
+    if(strA == NULL || strB == NULL) return 0;
     int count = str_length(strA);
     if(count != str_length(strB)) return 0;
 

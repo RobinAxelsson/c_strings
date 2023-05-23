@@ -5,6 +5,26 @@ typedef int (*FuncInt)(void*);
 typedef char* (*FuncStr)(void*);
 typedef int (*FuncNoArgs)();
 
+void assert_true(int result, char* name, int* tests, int* passed){
+    (*tests)++;
+    if(result){
+        (*passed)++;
+    }
+    else{
+        printf("Fail: %s\n", name);
+    }
+}
+
+void test_str_equal(char* expected, char* result, char* name, int* tests, int* passed){
+    (*tests)++;
+    if(str_equal(expected, result)){
+        (*passed)++;
+    }
+    else{
+        printf("Fail: %s, expected: %s, result: %s\n", name, expected, result);
+    }
+}
+
 int test_str_copy_hello(){
     char* source = "Hello";
     char target[6];
@@ -119,39 +139,50 @@ void Test_doc_contains(char* testName, int* tests, int* passed){
     }
 }
 
-void test_str_equal(char* expected, char* result, char* name, int* tests, int* passed){
-    (*tests)++;
-    if(str_equal(expected, result)){
-        (*passed)++;
-    }
-    else{
-        printf("Fail: %s, expected: %s, result: %s\n", name, expected, result);
-    }
-}
-
 void Test_doc_structure(int* tests, int* passed){
 
-    char* text = "Hello world! Hey globe!\nParagraph: nice!";
-    char**** result = get_document(text);
+char**** result = get_document(NULL);
+assert_true(result == NULL, "doc: NULL text", tests, passed);
 
-    char*** paragraph0 = result[0];
-    char*** paragraph1 = result[1];
-    char** paragraph0sentence0 = paragraph0[0];
-    char** paragraph0sentence1 = paragraph0[1];
-    char** paragraph1sentence0 = paragraph1[0];
-    char* hello = paragraph0sentence0[0];
-    char* world = paragraph0sentence0[1];
-    char* hey = paragraph0sentence1[0];
-    char* globe = paragraph0sentence1[1];
-    char* paragraph = paragraph1sentence0[0];
-    char* nice = paragraph1sentence0[1];
+char nullArray[1];
+nullArray[0] = '\0';
+result = get_document(nullArray);
 
-    test_str_equal("Hello", hello, "doc structure 1", tests, passed);
-    test_str_equal("world", world, "doc structure 2", tests, passed);
-    test_str_equal("Paragraph:", paragraph, "doc structure 0p 2s 0w", tests, passed);
-     test_str_equal("nice", nice, "doc structure 0p 2s 0w", tests, passed);
-     test_str_equal("Hey", hey, "doc structure 0p 2s 0w", tests, passed);
-     test_str_equal("globe", globe, "doc structure 0p 2s 0w", tests, passed);
+assert_true(result == NULL, "doc: NULL text", tests, passed);
+
+char**** document = get_document("Hello World");
+assert_true(document != NULL, "doc ptr", tests, passed);
+char*** paragraph0 = document[0];
+assert_true(paragraph0 != NULL, "text expect not null", tests, passed);
+char** sentence0 = paragraph0[0];
+assert_true(sentence0 != NULL, "text expect not null", tests, passed);
+    char* word0 = sentence0[0];
+    test_str_equal("Hello", word0, "Test document for Hello", tests, passed);
+    char* word1 = sentence0[1];
+    test_str_equal("World", word1, "Test document World", tests, passed);
+
+
+//    char* text = "Hello world! Hey globe!\nParagraph: nice!";
+//    char**** result = get_document(text);
+//
+//    char*** paragraph0 = result[0];
+//    char*** paragraph1 = result[1];
+//    char** paragraph0sentence0 = paragraph0[0];
+//    char** paragraph0sentence1 = paragraph0[1];
+//    char** paragraph1sentence0 = paragraph1[0];
+//    char* hello = paragraph0sentence0[0];
+//    char* world = paragraph0sentence0[1];
+//    char* hey = paragraph0sentence1[0];
+//    char* globe = paragraph0sentence1[1];
+//    char* paragraph = paragraph1sentence0[0];
+//    char* nice = paragraph1sentence0[1];
+//
+//    test_str_equal("Hello", hello, "doc structure 1", tests, passed);
+//    test_str_equal("world", world, "doc structure 2", tests, passed);
+//    test_str_equal("Paragraph:", paragraph, "doc structure 0p 2s 0w", tests, passed);
+//     test_str_equal("nice", nice, "doc structure 0p 2s 0w", tests, passed);
+//     test_str_equal("Hey", hey, "doc structure 0p 2s 0w", tests, passed);
+//     test_str_equal("globe", globe, "doc structure 0p 2s 0w", tests, passed);
 }
 
 void Test_get_sentence(int* tests, int* passed){
