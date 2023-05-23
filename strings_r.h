@@ -25,6 +25,8 @@ char**** get_document(char* text);
 
 char*** get_sentences(char* text);
 
+char** str_trim(char* source, char* characters);
+
 void str_to_lower_in_place(char* string);
 
 char** doc_get_words(const char* text);

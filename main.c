@@ -134,12 +134,24 @@ void Test_doc_structure(int* tests, int* passed){
     char* text = "Hello world! Hey globe!\nParagraph: nice!";
     char**** result = get_document(text);
 
-    test_str_equal("Hello", result[0][0][0], "doc structure 1", tests, passed);
-    test_str_equal("world!", result[0][0][1], "doc structure 2", tests, passed);
-    test_str_equal("Paragraph:", result[1][0][0], "doc structure 0p 2s 0w", tests, passed);
-    // test_str_equal("nice!", result[1][0][1], "doc structure 0p 2s 0w", tests, passed); //runtime error
-    // test_str_equal("Hey", result[0][1][0], "doc structure 0p 2s 0w", tests, passed); //outputs hello
-    // test_str_equal("globe!", result[0][1][1], "doc structure 0p 2s 0w", tests, passed); //outputs world
+    char*** paragraph0 = result[0];
+    char*** paragraph1 = result[1];
+    char** paragraph0sentence0 = paragraph0[0];
+    char** paragraph0sentence1 = paragraph0[1];
+    char** paragraph1sentence0 = paragraph1[0];
+    char* hello = paragraph0sentence0[0];
+    char* world = paragraph0sentence0[1];
+    char* hey = paragraph0sentence1[0];
+    char* globe = paragraph0sentence1[1];
+    char* paragraph = paragraph1sentence0[0];
+    char* nice = paragraph1sentence0[1];
+
+    test_str_equal("Hello", hello, "doc structure 1", tests, passed);
+    test_str_equal("world", world, "doc structure 2", tests, passed);
+    test_str_equal("Paragraph:", paragraph, "doc structure 0p 2s 0w", tests, passed);
+     test_str_equal("nice", nice, "doc structure 0p 2s 0w", tests, passed);
+     test_str_equal("Hey", hey, "doc structure 0p 2s 0w", tests, passed);
+     test_str_equal("globe", globe, "doc structure 0p 2s 0w", tests, passed);
 }
 
 void Test_get_sentence(int* tests, int* passed){
@@ -192,8 +204,8 @@ int main() {
     Test_doc_get_words("get words", &tests, &passed);
     Test_doc_get_paragraphs("get paragraphs", &tests, &passed);
     Test_doc_contains("contains 1", &tests, &passed);
-    //Test_doc_structure(&tests, &passed);
     Test_get_sentence(&tests, &passed);
+    Test_doc_structure(&tests, &passed);
     printf("%d/%d tests passed", passed, tests);
     return 0;
 }

@@ -51,16 +51,57 @@ char** str_splitr(const char* text, char* delimiters, char terminator){
     return substrings;
 }
 
+char** str_trim(char* source, char* characters){
+
+    int length = str_length(source);
+    char* startPtr = source;
+    for (int i = 0; i < length; ++i) {
+        int stop = 0;
+        for (char* c = characters; c != '\0'; c++) {
+            if(source[i] != *c){
+                stop = 1;
+                break;
+            }
+        }
+        if(stop) break;
+        startPtr++;
+    }
+
+    char* endPointer = source + (length - 1);
+
+    for (int i = (length-1); i >= 0; --i) {
+        int stop = 0;
+        for (char* c = characters; c != '\0'; c++) {
+            if(source[i] != *c){
+                stop = 1;
+                break;
+            }
+        }
+        if(stop) break;
+        startPtr++;
+    }
+
+    int outputLength = endPointer - startPtr;
+    char* output = malloc(sizeof(char) * (outputLength + 1));
+    output[outputLength] = '\0';
+
+    for (int i = 0; i < outputLength; ++i) {
+        output[i] = *(startPtr + i);
+    }
+
+    return output;
+}
+
 char*** get_sentences(char* text){
     char*** sentenceList;
     char** dotSplit = str_splitr(text, ".!?", '\0');
-    int s_length = 0;
-    for (char** cpp = dotSplit; *cpp != NULL ; cpp++) s_length++;
+    int s_count = 0;
+    for (char** cpp = dotSplit; *cpp != NULL ; cpp++) s_count++;
 
-    sentenceList = malloc(sizeof(char**)*(s_length +1));
-    sentenceList[s_length] = NULL;
+    sentenceList = malloc(sizeof(char**)*(s_count + 1));
+    sentenceList[s_count] = NULL;
 
-    for (int i = 0; i < s_length; ++i) {
+    for (int i = 0; i < s_count; ++i) {
         char** wordSplit = str_splitr(dotSplit[i], " \n", '\0');
         int w_count = 0;
         for (char** cpp = wordSplit; *cpp != NULL ; cpp++) w_count++;
@@ -68,10 +109,9 @@ char*** get_sentences(char* text){
         sentenceList[i][w_count] = NULL;
 
         for (int j = 0; j < w_count; ++j) {
-            char* currentWord = wordSplit[j];
-            int wordLength = str_length(currentWord);
+            int wordLength = str_length(wordSplit[j]);
             sentenceList[i][j] = malloc(sizeof(char) * (wordLength + 1));
-            str_copy(currentWord, sentenceList[i][j]);
+            str_copy(wordSplit[j], sentenceList[i][j]);
         }
     }
 
@@ -83,9 +123,9 @@ char**** get_document(char* text){
     char** newlineSplit = str_splitr(text, "\n", '\0');
     int p_length = 0;
     for (char** cpp = newlineSplit; *cpp != NULL ; cpp++) p_length++;
+
     document = malloc(sizeof(char***) * (p_length + 1));
     document[p_length] = NULL;
-
 
     for (int i = 0; i < p_length; ++i) {
         char** dotSplit = str_splitr(newlineSplit[i], ".!?\n", '\0');
@@ -95,23 +135,19 @@ char**** get_document(char* text){
         document[i][s_length] = NULL;
 
         for (int j = 0; j < s_length; ++j) {
-            char** words = str_splitr(newlineSplit[i], " ", '\0');
-            int w_length = 0;
-            for (char** cpp = dotSplit; *cpp != NULL ; cpp++) w_length++;
-            document[i][j] = malloc(sizeof(char*) * (w_length + 1));
-            document[i][j][s_length] = NULL;
+            char** wordSplit = str_splitr(newlineSplit[i], " ", '\0');
+            int w_count = 0;
+            for (char** cpp = dotSplit; *cpp != NULL ; cpp++) w_count++;
+            document[i][j] = malloc(sizeof(char*) * (w_count + 1));
+            document[i][j][w_count] = NULL;
 
-            for (int k = 0; k < w_length; ++k) {
-                int length = str_length(words[k]);
-                document[i][j][k] = malloc(sizeof(char) * (length + 1));
-                str_copy(words[k], document[i][j][k]);
-                free(words[k]);
+            for (int k = 0; k < w_count; ++k) {
+                int wordLength = str_length(wordSplit[k]);
+                document[i][j][k] = malloc(sizeof(char) * (wordLength + 1));
+                str_copy(wordSplit[k], document[i][j][k]);
             }
-            free(words);
         }
-        free(dotSplit);
     }
-    free(newlineSplit);
 
     return document;
 }
