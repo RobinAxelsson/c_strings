@@ -51,45 +51,50 @@ char** str_splitr(const char* text, char* delimiters, char terminator){
     return substrings;
 }
 
-char** str_trim(char* source, char* characters){
-
-    int length = str_length(source);
+char* str_left_trim(char* const source, char* const characters){
+    if(source == NULL) return NULL;
+    if(source[0] == '\0') return NULL;
+    if(characters == NULL) return source;
     char* startPtr = source;
-    for (int i = 0; i < length; ++i) {
-        int stop = 0;
-        for (char* c = characters; c != '\0'; c++) {
-            if(source[i] != *c){
-                stop = 1;
-                break;
-            }
-        }
-        if(stop) break;
+    while(char_is_delimiter(*startPtr, characters)) {
         startPtr++;
     }
 
-    char* endPointer = source + (length - 1);
+    return startPtr;
+}
 
-    for (int i = (length-1); i >= 0; --i) {
-        int stop = 0;
-        for (char* c = characters; c != '\0'; c++) {
-            if(source[i] != *c){
-                stop = 1;
-                break;
-            }
-        }
-        if(stop) break;
-        startPtr++;
+char* str_right_trim(char* const source, char* const characters){
+    if(source == NULL) return NULL;
+    if(source[0] == '\0') return NULL;
+    if(characters == NULL) return source;
+
+    char* startPtr = source;
+    int sourceLength = str_length(source);
+    char* endPtr = startPtr + sourceLength - 1;
+    while(char_is_delimiter(*endPtr, characters)) {
+        endPtr--;
+    }
+    if(startPtr == endPtr){
+        char* arr = malloc(sizeof(char) * 2);
+        arr[0] = *startPtr;
+        arr[1] = '\0';
+
+        return arr;
     }
 
-    int outputLength = endPointer - startPtr;
-    char* output = malloc(sizeof(char) * (outputLength + 1));
-    output[outputLength] = '\0';
+    int resultLength = endPtr - startPtr + 1;
+    char* result = malloc(sizeof(char) * (endPtr - startPtr + 1));
+    result[resultLength] = '\0';
 
-    for (int i = 0; i < outputLength; ++i) {
-        output[i] = *(startPtr + i);
+    for (int i = 0; i < resultLength; ++i) {
+        result[i] = startPtr[i];
     }
 
-    return output;
+    return result;
+}
+
+char* str_trim(char* const source, char* const characters){
+    return str_right_trim(str_left_trim(source, characters), characters);
 }
 
 char*** get_sentences(char* text){
@@ -153,6 +158,7 @@ char**** get_document(char* text){
 }
 
 int str_length(const char* string){
+    if(string == NULL) return 0;
     int count = 0;
     for (char* c = string; *c != '\0'; c++) count++;
     return count;

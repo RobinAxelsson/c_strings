@@ -165,12 +165,55 @@ void Test_get_sentence(int* tests, int* passed){
     char* word2 = sentence1[0];
     char* word3 = sentence1[1];
 
-    test_str_equal("Hello", word0, "doc structure 1", tests, passed);
-    test_str_equal("world", word1, "doc structure 2", tests, passed);
-    test_str_equal("Hey", word2, "doc structure 0p 2s 0w", tests, passed);
-    test_str_equal("bro", word3, "doc structure 0p 2s 0w", tests, passed);
+    test_str_equal("Hello", word0, "get sentences", tests, passed);
+    test_str_equal("world", word1, "get sentences", tests, passed);
+    test_str_equal("Hey", word2, "get sentences", tests, passed);
+    test_str_equal("bro", word3, "get sentences", tests, passed);
+}
+void Test_str_right_trim(int* tests, int* passed) {
+    test_str_equal("A", str_right_trim("A", "."), "right trim", tests, passed);
+    test_str_equal("A", str_right_trim("A.", "."), "right trim", tests, passed);
+    test_str_equal("Aa", str_right_trim("Aa.", "."), "right trim", tests, passed);
+    test_str_equal(NULL, str_right_trim(NULL, "."), "trim", tests, passed);
+    test_str_equal("a.g", str_right_trim("a.g.", "."), "trim", tests, passed);
+    test_str_equal(".....a.g", str_right_trim(".....a.g....", "."), "trim", tests, passed);
+    test_str_equal("A", str_right_trim("A_", "_"), "trim", tests, passed);
+    test_str_equal("A", str_right_trim("A", NULL), "trim", tests, passed);
+    test_str_equal("", str_right_trim(".", "."), "trim", tests, passed);
+    test_str_equal("A", str_right_trim("A._", "_."), "trim", tests, passed);
+    test_str_equal("!.-_ \nA", str_right_trim("!.-_ \nA!.-_ \nb\n", "_.-!\nb "), "trim", tests, passed);
+    char nullArray[1];
+    nullArray[0] = '\0';
+    test_str_equal(NULL, str_right_trim(nullArray, "."), "trim", tests, passed);
+    test_str_equal("A", str_right_trim("A", nullArray), "trim", tests, passed);
 }
 
+void Test_str_left_trim(int* tests, int* passed){
+    test_str_equal("A", str_left_trim("A", "."), "trim", tests, passed);
+    test_str_equal("A", str_left_trim(".A", "."), "trim", tests, passed);
+    test_str_equal("B", str_left_trim(".B", "."), "trim", tests, passed);
+    test_str_equal("Ba", str_left_trim(".Ba", "."), "trim", tests, passed);
+    test_str_equal(NULL, str_left_trim(NULL, "."), "trim", tests, passed);
+    test_str_equal("a.g", str_left_trim(".a.g", "."), "trim", tests, passed);
+    test_str_equal("a.g....", str_left_trim(".....a.g....", "."), "trim", tests, passed);
+    test_str_equal("A", str_left_trim("_A", "_"), "trim", tests, passed);
+    test_str_equal("A", str_left_trim("A", NULL), "trim", tests, passed);
+    test_str_equal("", str_left_trim(".", "."), "trim", tests, passed);
+    test_str_equal("A", str_left_trim("_.A", "_."), "trim", tests, passed);
+    test_str_equal("A!.-_ \nb\n", str_left_trim("!.-_ \nA!.-_ \nb\n", "_.-!\n "), "trim", tests, passed);
+
+    char nullArray[1];
+    nullArray[0] = '\0';
+    test_str_equal(NULL, str_left_trim(nullArray, "."), "trim", tests, passed);
+    test_str_equal("A", str_left_trim("A", nullArray), "trim", tests, passed);
+}
+
+void Test_str_trim(int* tests, int* passed){
+    char* hello = str_trim("...Hello!!", ".! ");
+    char* my_bad = str_trim("..\n.my bad!!:, ", ".! \n:,");
+    test_str_equal("Hello", hello, "trim", tests, passed);
+    test_str_equal("my bad", my_bad, "trim", tests, passed);
+}
 
 
 int main() {
@@ -206,6 +249,9 @@ int main() {
     Test_doc_contains("contains 1", &tests, &passed);
     Test_get_sentence(&tests, &passed);
     Test_doc_structure(&tests, &passed);
+    Test_str_trim(&tests, &passed);
+    Test_str_left_trim(&tests, &passed);
+    Test_str_right_trim(&tests, &passed);
     printf("%d/%d tests passed", passed, tests);
     return 0;
 }

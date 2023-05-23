@@ -25,7 +25,11 @@ char**** get_document(char* text);
 
 char*** get_sentences(char* text);
 
-char** str_trim(char* source, char* characters);
+char* str_trim(char* const source, char* const characters);
+
+char* str_left_trim(char* const source, char* const characters);
+
+char* str_right_trim(char* const source, char* const characters);
 
 void str_to_lower_in_place(char* string);
 
