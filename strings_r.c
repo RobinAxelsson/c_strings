@@ -123,20 +123,45 @@ char*** get_sentences(char* text){
     return sentenceList;
 }
 
+int count_grouped_strings(char** grouped){
+    int count = 0;
+    while()
+}
+
 char**** get_document(char* text){
     if(text == NULL) return NULL;
     if(*text == '\0') return NULL;
+
+    char** paragraphs = str_splitr(text, "\n", '\0');
+    int paragraph_count = 0;
     char**** document = malloc(sizeof(char***));
-    char*** paragraph0 = malloc(sizeof(char**));
+
+    char*** paragraph0 = malloc(sizeof(char**) * 2);
     document[0] = paragraph0;
-    char** sentence0 = malloc(sizeof(char*) * 2);
-    paragraph0[0] = sentence0;
-    char* word0 = malloc(sizeof(char) * 6);
-    sentence0[0] = word0;
-    char* word1 = malloc(sizeof(char) * 6);
-    sentence0[1] = word1;
-    str_copy("Hello", word0);
-    str_copy("World", word1);
+
+        char** sentence0 = malloc(sizeof(char*) * 2);
+        paragraph0[0] = sentence0;
+        char* word0 = malloc(sizeof(char) * 6);
+        sentence0[0] = word0;
+        char* word1 = malloc(sizeof(char) * 6);
+        sentence0[1] = word1;
+        str_copy("Hello", word0);
+        str_copy("World", word1);
+
+        char** sentence1 = malloc(sizeof(char*));
+        paragraph0[1] = sentence1;
+        char* word10 = malloc(sizeof(char)*4);
+        sentence1[0] = word10;
+        str_copy("Hey", word10);
+
+    char*** paragraph1 = malloc(sizeof(char**) * 1);
+    document[1] = paragraph1;
+
+        char** sentence10 = malloc(sizeof(char*));
+        paragraph1[0] = sentence10;
+        char* word100 = malloc(sizeof(char) * 8);
+        sentence10[0] = word100;
+        str_copy("newline", word100);
 
     return document;
 }

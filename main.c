@@ -150,17 +150,26 @@ result = get_document(nullArray);
 
 assert_true(result == NULL, "doc: NULL text", tests, passed);
 
-char**** document = get_document("Hello World");
+char**** document = get_document("Hello World. Hey.\nnewline");
 assert_true(document != NULL, "doc ptr", tests, passed);
 char*** paragraph0 = document[0];
 assert_true(paragraph0 != NULL, "text expect not null", tests, passed);
 char** sentence0 = paragraph0[0];
 assert_true(sentence0 != NULL, "text expect not null", tests, passed);
-    char* word0 = sentence0[0];
-    test_str_equal("Hello", word0, "Test document for Hello", tests, passed);
-    char* word1 = sentence0[1];
-    test_str_equal("World", word1, "Test document World", tests, passed);
 
+char* word0 = sentence0[0];
+test_str_equal("Hello", word0, "Test document for Hello", tests, passed);
+char* word1 = sentence0[1];
+test_str_equal("World", word1, "Test document World", tests, passed);
+
+char** sentence1 = paragraph0[1];
+test_str_equal("Hey", sentence1[0], "Test document for Hey", tests, passed);
+
+char* word100 = document[1][0][0];
+test_str_equal("newline", word100, "test for newline", tests, passed);
+
+char**** document1 = get_document("Next");
+test_str_equal("Next", document1[0][0][1], "test for not hardcoded", tests, passed);
 
 //    char* text = "Hello world! Hey globe!\nParagraph: nice!";
 //    char**** result = get_document(text);
