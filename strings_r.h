@@ -25,6 +25,8 @@ char**** get_document(char* text);
 
 char*** get_sentences(char* text);
 
+void free_document(char**** document);
+
 char* str_trim(char* const source, char* const characters);
 
 char* str_left_trim(char* const source, char* const characters);

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 int str_split_count(char* text, char* delimiters){
-    if(*text == '\0' || text == NULL) return 0;
+    if(text == NULL || *text == '\0') return 0;
     int splits = 1;
     char* txtPtr = text;
 
@@ -25,9 +25,13 @@ int str_split_count(char* text, char* delimiters){
 }
 
 char** str_splitr(const char* text, char* delimiters, char terminator){
+    if (text == NULL || delimiters == NULL) return NULL;
+
     int splitLength = str_split_count(text, delimiters);
     char* txtPtr = text;
     char** substrings = malloc(sizeof(char*) * (splitLength + 1));
+    if (substrings == NULL) return NULL;
+
     substrings[splitLength] = NULL;
 
     for (int i = 0; i < splitLength; ++i) {
@@ -41,6 +45,13 @@ char** str_splitr(const char* text, char* delimiters, char terminator){
             txtPtr++;
         }
         substrings[i] = malloc(sizeof(char) * (length + 1));
+        if (substrings[i] == NULL) {
+            for (int j = 0; j < i; ++j) {
+                free(substrings[j]);
+            }
+            free(substrings);
+            return NULL;
+        }
 
         for (int j = 0; j < length; ++j) {
             substrings[i][j] = *(start + j);
@@ -123,9 +134,14 @@ char*** get_sentences(char* text){
     return sentenceList;
 }
 
-int count_grouped_strings(char** grouped){
+int countArray(void **ptr){
+    if(ptr == NULL) return 0;
     int count = 0;
-    while()
+    while (*ptr != NULL) {
+        count++;
+        ptr++;
+    }
+    return count;
 }
 
 char**** get_document(char* text){
@@ -133,37 +149,58 @@ char**** get_document(char* text){
     if(*text == '\0') return NULL;
 
     char** paragraphs = str_splitr(text, "\n", '\0');
-    int paragraph_count = 0;
-    char**** document = malloc(sizeof(char***));
+    int paragraph_count = countArray(paragraphs);
+    char**** document = malloc(sizeof(char***) * (paragraph_count + 1));
+    document[paragraph_count] = NULL;
 
-    char*** paragraph0 = malloc(sizeof(char**) * 2);
-    document[0] = paragraph0;
+    for (int i = 0; i < paragraph_count; ++i) {
+        char** sentences = str_splitr(paragraphs[i], ".!?", '\0');
+        int sentencesCount = countArray(sentences);
+        document[i] = malloc(sizeof(char**) * (sentencesCount + 1));
+        document[i][sentencesCount] = NULL;
 
-        char** sentence0 = malloc(sizeof(char*) * 2);
-        paragraph0[0] = sentence0;
-        char* word0 = malloc(sizeof(char) * 6);
-        sentence0[0] = word0;
-        char* word1 = malloc(sizeof(char) * 6);
-        sentence0[1] = word1;
-        str_copy("Hello", word0);
-        str_copy("World", word1);
+        for (int j = 0; j < sentencesCount; ++j) {
+            char** wordList = str_splitr(sentences[j], " ", '\0');
+            int word_count = countArray(wordList);
+            document[i][j] = malloc(sizeof(char*)* (word_count + 1));
+            document[i][j][word_count] = NULL;
 
-        char** sentence1 = malloc(sizeof(char*));
-        paragraph0[1] = sentence1;
-        char* word10 = malloc(sizeof(char)*4);
-        sentence1[0] = word10;
-        str_copy("Hey", word10);
-
-    char*** paragraph1 = malloc(sizeof(char**) * 1);
-    document[1] = paragraph1;
-
-        char** sentence10 = malloc(sizeof(char*));
-        paragraph1[0] = sentence10;
-        char* word100 = malloc(sizeof(char) * 8);
-        sentence10[0] = word100;
-        str_copy("newline", word100);
+            for (int k = 0; k < word_count; ++k) {
+                char* word = wordList[k];
+                int word_length = str_length(word);
+                document[i][j][k] = malloc(sizeof(char) * (word_length + 1));
+                str_copy(word, document[i][j][k]);
+                free(wordList[k]);
+            }
+            free(wordList);
+            free(sentences[j]);
+        }
+        free(sentences);
+        free(paragraphs[i]);
+    }
+    free(paragraphs);
 
     return document;
+}
+
+void free_document(char**** document){
+    if(document == NULL) return;
+    int paragraph_count = countArray(document);
+    for (int i = 0; i < paragraph_count; ++i) {
+        if(document[i] == NULL) continue;
+        int sentence_count = countArray(document[i]);
+        for (int j = 0; j < sentence_count; ++j) {
+            if(document[i][j] == NULL) continue;
+            int word_count = countArray(document[i][j]);
+            for (int k = 0; k < word_count; ++k) {
+                if(document[i][j][k] == NULL) continue;
+                free(document[i][j][k]);
+            }
+            free(document[i][j]);
+        }
+        free(document[i]);
+    }
+    free(document);
 }
 
 int str_length(const char* string){
@@ -282,9 +319,16 @@ char** doc_get_paragraphs(char* text){
 }
 
 int char_is_delimiter(char character, char* delimiters){
-    for (char* c = delimiters; *c != '\0' ; c++) {
-        if(character == *c) return 1;
+    if (delimiters == NULL) {
+        return 0;
     }
+
+    for (const char* c = delimiters; *c != '\0' ; c++) {
+        if(character == *c) {
+            return 1;
+        }
+    }
+
     return 0;
 }
 
