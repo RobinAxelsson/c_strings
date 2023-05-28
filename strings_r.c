@@ -24,11 +24,12 @@ int str_split_count(char* text, char* delimiters){
     return splits;
 }
 
-char** str_splitr(const char* text, char* delimiters, char terminator){
+char** str_splitr(char* text, char* delimiters, char terminator){
     if (text == NULL || delimiters == NULL) return NULL;
 
     int splitLength = str_split_count(text, delimiters);
     char* txtPtr = text;
+
     char** substrings = malloc(sizeof(char*) * (splitLength + 1));
     if (substrings == NULL) return NULL;
 
@@ -62,7 +63,7 @@ char** str_splitr(const char* text, char* delimiters, char terminator){
     return substrings;
 }
 
-char* str_left_trim(char* const source, char* const characters){
+char* str_left_trim(char* source, char* characters){
     if(source == NULL) return NULL;
     if(source[0] == '\0') return NULL;
     if(characters == NULL) return source;
@@ -74,7 +75,7 @@ char* str_left_trim(char* const source, char* const characters){
     return startPtr;
 }
 
-char* str_right_trim(char* const source, char* const characters){
+char* str_right_trim(char* source, char* characters){
     if(source == NULL) return NULL;
     if(source[0] == '\0') return NULL;
     if(characters == NULL) return source;
@@ -87,14 +88,17 @@ char* str_right_trim(char* const source, char* const characters){
     }
     if(startPtr == endPtr){
         char* arr = malloc(sizeof(char) * 2);
+        if (arr == NULL) return NULL;
         arr[0] = *startPtr;
         arr[1] = '\0';
 
         return arr;
     }
 
-    int resultLength = endPtr - startPtr + 1;
+    size_t resultLength = endPtr - startPtr + 1;
     char* result = malloc(sizeof(char) * (endPtr - startPtr + 1));
+    if(result == NULL) return NULL;
+
     result[resultLength] = '\0';
 
     for (int i = 0; i < resultLength; ++i) {
@@ -104,32 +108,43 @@ char* str_right_trim(char* const source, char* const characters){
     return result;
 }
 
-char* str_trim(char* const source, char* const characters){
+char* str_trim(char* source, char* characters){
     return str_right_trim(str_left_trim(source, characters), characters);
 }
 
 char*** get_sentences(char* text){
-    char*** sentenceList;
-    char** dotSplit = str_splitr(text, ".!?", '\0');
-    int s_count = 0;
-    for (char** cpp = dotSplit; *cpp != NULL ; cpp++) s_count++;
+    if(text == NULL) return NULL;
 
-    sentenceList = malloc(sizeof(char**)*(s_count + 1));
-    sentenceList[s_count] = NULL;
+    char** sentences = str_splitr(text, ".!?", '\0');
+    if(sentences == NULL) return NULL;
 
-    for (int i = 0; i < s_count; ++i) {
-        char** wordSplit = str_splitr(dotSplit[i], " \n", '\0');
-        int w_count = 0;
-        for (char** cpp = wordSplit; *cpp != NULL ; cpp++) w_count++;
-        sentenceList[i] = malloc(sizeof(char*)* (w_count + 1));
-        sentenceList[i][w_count] = NULL;
+    int sentences_count = 0;
+    for (char** cpp = sentences; *cpp != NULL ; cpp++) sentences_count++;
 
-        for (int j = 0; j < w_count; ++j) {
-            int wordLength = str_length(wordSplit[j]);
+    char*** sentenceList = malloc(sizeof(char**)*(sentences_count + 1));
+    if(sentenceList == NULL) return NULL;
+    sentenceList[sentences_count] = NULL;
+
+    for (int i = 0; i < sentences_count; ++i) {
+        char** words = str_splitr(sentences[i], " \n", '\0');
+        if(words == NULL) continue;
+
+        int word_count = 0;
+        for (char** cpp = words; *cpp != NULL ; cpp++) word_count++;
+
+        sentenceList[i] = malloc(sizeof(char*)* (word_count + 1));
+        if(sentenceList[i] == NULL) continue;
+        sentenceList[i][word_count] = NULL;
+
+        for (int j = 0; j < word_count; ++j) {
+            int wordLength = str_length(words[j]);
             sentenceList[i][j] = malloc(sizeof(char) * (wordLength + 1));
-            str_copy(wordSplit[j], sentenceList[i][j]);
+            str_copy(words[j], sentenceList[i][j]);
+            free(words[j]);
         }
+        free(words);
     }
+    free(sentences);
 
     return sentenceList;
 }
@@ -149,19 +164,19 @@ char**** get_document(char* text){
     if(*text == '\0') return NULL;
 
     char** paragraphs = str_splitr(text, "\n", '\0');
-    int paragraph_count = countArray(paragraphs);
+    int paragraph_count = countArray((void*)paragraphs);
     char**** document = malloc(sizeof(char***) * (paragraph_count + 1));
     document[paragraph_count] = NULL;
 
     for (int i = 0; i < paragraph_count; ++i) {
         char** sentences = str_splitr(paragraphs[i], ".!?", '\0');
-        int sentencesCount = countArray(sentences);
+        int sentencesCount = countArray((void*)sentences);
         document[i] = malloc(sizeof(char**) * (sentencesCount + 1));
         document[i][sentencesCount] = NULL;
 
         for (int j = 0; j < sentencesCount; ++j) {
             char** wordList = str_splitr(sentences[j], " ", '\0');
-            int word_count = countArray(wordList);
+            int word_count = countArray((void*)wordList);
             document[i][j] = malloc(sizeof(char*)* (word_count + 1));
             document[i][j][word_count] = NULL;
 
@@ -183,15 +198,48 @@ char**** get_document(char* text){
     return document;
 }
 
+void free_2dArr(char** words){
+    if(words == NULL) return;
+    int w_count = countArray((void*) words);
+    for (int i = 0; i < w_count; ++i) {
+        free(words[i]);
+    }
+    free(words);
+}
+
+void free_Array(void** arr){
+    if(arr == NULL) return;
+    int count = countArray((void*) arr);
+    for (int i = 0; i < count; ++i) {
+        free(arr[i]);
+    }
+    free(arr);
+}
+
+void free_array_rec(void **ptr, int recursions) {
+    if (ptr == NULL) {
+        return;
+    }
+    int count = countArray((void*)ptr);
+    for (int i = 0; i < count; ++i) {
+        if(ptr[i] == NULL) continue;
+        if(recursions != 0){
+            free_array_rec((void**)ptr[i], recursions -1);
+        }
+        free(ptr[i]);
+    }
+    free(ptr);
+}
+
 void free_document(char**** document){
     if(document == NULL) return;
-    int paragraph_count = countArray(document);
+    int paragraph_count = countArray((void **)document);
     for (int i = 0; i < paragraph_count; ++i) {
         if(document[i] == NULL) continue;
-        int sentence_count = countArray(document[i]);
+        int sentence_count = countArray((void **)document[i]);
         for (int j = 0; j < sentence_count; ++j) {
             if(document[i][j] == NULL) continue;
-            int word_count = countArray(document[i][j]);
+            int word_count = countArray((void **)document[i][j]);
             for (int k = 0; k < word_count; ++k) {
                 if(document[i][j][k] == NULL) continue;
                 free(document[i][j][k]);
@@ -203,23 +251,23 @@ void free_document(char**** document){
     free(document);
 }
 
-int str_length(const char* string){
+int str_length(char* string){
     if(string == NULL) return 0;
     int count = 0;
     for (char* c = string; *c != '\0'; c++) count++;
     return count;
 }
 
-int str_word_count(const char* text) {
+int str_word_count(char* text) {
     return str_split_count(text, " \n");
 }
 
-int str_paragraph_count(const char* text) {
+int str_paragraph_count(char* text) {
     return str_split_count(text, "\n");
 }
 
 
-char* str_to_upper(const char* string){
+char* str_to_upper(char* string){
     int length = str_length(string);
     char* newString = malloc(sizeof(char)* (length+1));
     if(newString == NULL){
@@ -228,7 +276,7 @@ char* str_to_upper(const char* string){
 
     for (int i = 0; i < length; ++i) {
         if('a' <= string[i] && string[i] <= 'z' ){
-            newString[i] = string[i] -'a' + 'A';
+            newString[i] = (char) (string[i] -'a' + 'A');
         }
         else newString[i] = string[i];
     }
@@ -237,7 +285,7 @@ char* str_to_upper(const char* string){
     return newString;
 }
 
-char* str_to_lower_copy(const char* string){
+char* str_to_lower(char* string){
     int length = str_length(string);
     char* newString = malloc(sizeof(char)* (length+1));
 
@@ -246,8 +294,8 @@ char* str_to_lower_copy(const char* string){
     }
 
     for (int i = 0; i < length; ++i) {
-        if('A' < string[i] && string[i] < 'Z' ){
-            newString[i] = string[i] + 'a' - 'A';
+        if('A' <= string[i] && string[i] <= 'Z' ){
+            newString[i] = (char) (string[i] + 'a' - 'A');
         }
         else newString[i] = string[i];
     }
@@ -261,7 +309,7 @@ void str_to_lower_in_place(char* string){
 
     for (int i = 0; i < length; ++i) {
         if('A' <= string[i] && string[i] <= 'Z'){
-            string[i] = string[i] + 'a' - 'A';
+            string[i] = (char)(string[i] + 'a' - 'A');
         }
     }
 }
@@ -310,7 +358,7 @@ void str_reverse(char* string, char* reverse){
     reverse[length + 1] = '\0';
 }
 
-int str_sentence_count(const char* text) {
+int str_sentence_count(char* text) {
     return str_split_count(text, ".!?\n");
 }
 
@@ -323,7 +371,7 @@ int char_is_delimiter(char character, char* delimiters){
         return 0;
     }
 
-    for (const char* c = delimiters; *c != '\0' ; c++) {
+    for (char* c = delimiters; *c != '\0' ; c++) {
         if(character == *c) {
             return 1;
         }
@@ -332,6 +380,8 @@ int char_is_delimiter(char character, char* delimiters){
     return 0;
 }
 
-char** doc_get_words(const char* text){
+char** doc_get_words(char* text){
     return str_splitr(text, " ", '\0');
 };
+
+//

@@ -5,17 +5,17 @@
 #ifndef C_STRINGS_STRINGS_R_H
 #define C_STRINGS_STRINGS_R_H
 
-int str_length(const char* string);
+int str_length(char* string);
 
-int str_word_count(const char* text);
+int str_word_count(char* text);
 
-int str_paragraph_count(const char* text);
+int str_paragraph_count(char* text);
 
-int str_sentence_count(const char* text);
+int str_sentence_count(char* text);
 
-char* str_to_upper(const char* string);
+char* str_to_upper(char* string);
 
-char* str_to_lower_copy(const char* string);
+char* str_to_lower(char* string);
 
 int char_is_delimiter(char character, char* delimiters);
 
@@ -27,15 +27,17 @@ char*** get_sentences(char* text);
 
 void free_document(char**** document);
 
-char* str_trim(char* const source, char* const characters);
+void free_2dArr(char** words);
 
-char* str_left_trim(char* const source, char* const characters);
+char* str_trim(char* source, char* characters);
 
-char* str_right_trim(char* const source, char* const characters);
+char* str_left_trim(char* source, char* characters);
+
+char* str_right_trim(char* source, char* characters);
 
 void str_to_lower_in_place(char* string);
 
-char** doc_get_words(const char* text);
+char** doc_get_words(char* text);
 
 char** doc_get_paragraphs(char* text);
 

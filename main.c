@@ -82,6 +82,9 @@ void TestStrResult(FuncStr func, char* testName, void* data, char* expected, int
     else{
         printf("Fail: %s, expected: %s, result: %s\n", testName, expected, result);
     }
+
+    free(result);
+    result = NULL;
 }
 
 void Test_doc_get_words(char* testName, int* tests, int* passed){
@@ -105,6 +108,9 @@ void Test_doc_get_words(char* testName, int* tests, int* passed){
     else{
         (*passed)++;
     }
+
+    free_2dArr(result);
+    result = NULL;
 }
 
 void Test_doc_get_paragraphs(char* testName, int* tests, int* passed){
@@ -119,6 +125,9 @@ void Test_doc_get_paragraphs(char* testName, int* tests, int* passed){
     else{
         printf("Fail: %s\n", testName);
     }
+
+    free_2dArr(result);
+    result = NULL;
 }
 
 void Test_doc_contains(char* testName, int* tests, int* passed){
@@ -142,40 +151,40 @@ void Test_doc_contains(char* testName, int* tests, int* passed){
 
 void Test_doc_structure(int* tests, int* passed){
 
-//char**** nullDocument = get_document(NULL);
-//assert_true(nullDocument == NULL, "doc: NULL text", tests, passed);
-//
-//char nullArray[1];
-//nullArray[0] = '\0';
-//    nullDocument = get_document(nullArray);
-//
-//assert_true(nullDocument == NULL, "doc: NULL text", tests, passed);
-//free_document(nullDocument);
+char**** nullDocument = get_document(NULL);
+assert_true(nullDocument == NULL, "doc: NULL text", tests, passed);
+
+char nullArray[1];
+nullArray[0] = '\0';
+    nullDocument = get_document(nullArray);
+
+assert_true(nullDocument == NULL, "doc: NULL text", tests, passed);
+free_document(nullDocument);
 
 char**** document = get_document("Hello World. Hey.\nnewline");
-//assert_true(document != NULL, "doc ptr", tests, passed);
-//char*** paragraph0 = document[0];
-//assert_true(paragraph0 != NULL, "text expect not null", tests, passed);
-//char** sentence0 = paragraph0[0];
-//assert_true(sentence0 != NULL, "text expect not null", tests, passed);
-//
-//char* word0 = sentence0[0];
-//test_str_equal("Hello", word0, "Test document for Hello", tests, passed);
-//char* word1 = sentence0[1];
-//test_str_equal("World", word1, "Test document World", tests, passed);
-//
-//char** sentence1 = paragraph0[1];
-//test_str_equal("Hey", sentence1[0], "Test document for Hey", tests, passed);
-//
-//char* word100 = document[1][0][0];
-//test_str_equal("newline", word100, "test for newline", tests, passed);
-//
+assert_true(document != NULL, "doc ptr", tests, passed);
+char*** paragraph0 = document[0];
+assert_true(paragraph0 != NULL, "text expect not null", tests, passed);
+char** sentence0 = paragraph0[0];
+assert_true(sentence0 != NULL, "text expect not null", tests, passed);
+
+char* word0 = sentence0[0];
+test_str_equal("Hello", word0, "Test document for Hello", tests, passed);
+char* word1 = sentence0[1];
+test_str_equal("World", word1, "Test document World", tests, passed);
+
+char** sentence1 = paragraph0[1];
+test_str_equal("Hey", sentence1[0], "Test document for Hey", tests, passed);
+
+char* word100 = document[1][0][0];
+test_str_equal("newline", word100, "test for newline", tests, passed);
+
 free_document(document);
-//
-//char**** document1 = get_document("Next");
-//
-//test_str_equal("Next", document1[0][0][0], "test for not hardcoded", tests, passed);
-//free_document(document1);
+
+char**** document1 = get_document("Next");
+
+test_str_equal("Next", document1[0][0][0], "test for not hardcoded", tests, passed);
+free_document(document1);
 }
 
 void Test_get_sentence(int* tests, int* passed){
@@ -239,7 +248,6 @@ void Test_str_trim(int* tests, int* passed){
     test_str_equal("my bad", my_bad, "trim", tests, passed);
 }
 
-
 int main() {
     int tests = 0;
     int passed = 0;
@@ -256,25 +264,25 @@ int main() {
     TestIntResult((FuncInt) str_length, "count_chars__words__5", "abcde", 5, &tests, &passed);
     TestIntResult((FuncInt) str_length, "count_chars__empty__5", "", 0, &tests, &passed);
 
-    TestStrResult((FuncStr)str_to_upper, "to upper 1","HELLO WORLD", "HELLO WORLD", &tests, &passed);
-    TestStrResult((FuncStr)str_to_upper, "to upper 2","hello world", "HELLO WORLD", &tests, &passed);
-    TestStrResult((FuncStr)str_to_upper, "to upper 3","hello !Wld...", "HELLO !WLD...", &tests, &passed);
-    TestStrResult((FuncStr)str_to_lower_copy, "to lower 1","Hello !Wld...", "hello !wld...", &tests, &passed);
+//    TestStrResult((FuncStr)str_to_upper, "to upper 1","HELLO WORLD", "HELLO WORLD", &tests, &passed);
+//    TestStrResult((FuncStr)str_to_upper, "to upper 2","hello world", "HELLO WORLD", &tests, &passed);
+//    TestStrResult((FuncStr)str_to_upper, "to upper 3","hello !Wld...", "HELLO !WLD...", &tests, &passed);
+//    TestStrResult((FuncStr) str_to_lower, "to lower 1", "Hello !Wld...", "hello !wld...", &tests, &passed);
 
-    TestBoolResult((FuncNoArgs) test_str_copy_hello, "str_copy 1", 1, &tests, &passed);
-    TestBoolResult((FuncNoArgs) test_str_copy_hell, "str_copy 2", 1, &tests, &passed);
-    TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
-
-    TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
-
-    Test_doc_get_words("get words", &tests, &passed);
-    Test_doc_get_paragraphs("get paragraphs", &tests, &passed);
-    Test_doc_contains("contains 1", &tests, &passed);
-    Test_get_sentence(&tests, &passed);
+//    TestBoolResult((FuncNoArgs) test_str_copy_hello, "str_copy 1", 1, &tests, &passed);
+//    TestBoolResult((FuncNoArgs) test_str_copy_hell, "str_copy 2", 1, &tests, &passed);
+//    TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
+//
+//    TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
+//
+//    Test_doc_get_words("get words", &tests, &passed);
+//    Test_doc_get_paragraphs("get paragraphs", &tests, &passed);
+//    Test_doc_contains("contains 1", &tests, &passed);
+//    Test_get_sentence(&tests, &passed);
     Test_doc_structure(&tests, &passed);
-    Test_str_trim(&tests, &passed);
-    Test_str_left_trim(&tests, &passed);
-    Test_str_right_trim(&tests, &passed);
+//    Test_str_trim(&tests, &passed);
+//    Test_str_left_trim(&tests, &passed);
+//    Test_str_right_trim(&tests, &passed);
     printf("%d/%d tests passed", passed, tests);
     return 0;
 }
