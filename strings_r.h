@@ -5,6 +5,30 @@
 #ifndef C_STRINGS_STRINGS_R_H
 #define C_STRINGS_STRINGS_R_H
 
+struct word {
+    char* data;
+};
+
+struct sentence {
+    struct word* data;
+    int word_count;
+};
+
+struct paragraph {
+    struct sentence* data  ;
+    int sentence_count;
+};
+
+struct document {
+    struct paragraph* data;
+    int paragraph_count;
+};
+int count_tokens(const char* text, const char* delimiters);
+struct document get_document_struct(const char* text);
+struct sentence get_sentence_struct(const char* text);
+struct word get_word_struct(const char* chars);
+struct paragraph get_paragraph_struct(const char* text);
+
 int str_length(char* string);
 
 int str_word_count(char* text);

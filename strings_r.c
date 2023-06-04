@@ -3,7 +3,96 @@
 //
 
 #include "strings_r.h"
+#include <string.h>
 #include <stdlib.h>
+
+int count_tokens(const char* text, const char* delimiters){
+    int token_count = 0;
+    char *buffer = strdup(text);
+    if(buffer == NULL) return  -1;
+    char *sp;
+    char *token = strtok_r(buffer, delimiters, &sp);
+    while(token != NULL){
+        token_count++;
+        token = strtok_r(NULL, delimiters, &sp);
+    }
+    free(buffer);
+    return token_count;
+}
+
+struct document get_document_struct(const char* text){
+    struct document result;
+    result.paragraph_count = count_tokens(text, "\n");
+    int p_count = count_tokens(text, "\n");
+    result.data = malloc(sizeof(struct paragraph) * result.paragraph_count);
+    if(result.data == NULL){
+        struct document error = { .data = NULL, .paragraph_count = -1 };
+    }
+    char *buffer = strdup(text);
+    char *sp;
+    char *token = strtok_r(buffer, "\n", &sp);
+
+    for (int i = 0; i < p_count; ++i) {
+        struct paragraph paragraph = get_paragraph_struct(token);
+        result.data[i] = paragraph;
+        token = strtok_r(NULL, "\n", &sp);
+        if(token == NULL) break;
+    }
+    free(buffer);
+    return result;
+}
+
+struct paragraph get_paragraph_struct(const char* text){
+    struct paragraph result;
+    int s_count = count_tokens(text, ".");
+    result.data = malloc(sizeof(struct sentence) * s_count);
+    if(result.data == NULL){
+        struct paragraph error = { .data = NULL, .sentence_count = -1 };
+        return error;
+    }
+    char *buffer = strdup(text);
+    char *sp;
+    char *token = strtok_r(buffer, ".", &sp);
+
+    for (int i = 0; i < s_count; ++i) {
+        struct sentence sentence = get_sentence_struct(token);
+        result.data[i] = sentence;
+        token = strtok_r(NULL, ".", &sp);
+        if(token == NULL) break;
+    }
+
+    free(buffer);
+    return result;
+}
+
+struct sentence get_sentence_struct(const char* text){
+    struct sentence result;
+    int w_count = count_tokens(text, " ");
+    result.word_count = w_count;
+    result.data = malloc(sizeof(struct word) * w_count);
+    if(result.data == NULL){
+        struct sentence s = { .data = NULL, .word_count = -1 };
+        return s;
+    };
+
+    char *buffer = strdup(text);
+    char *sp;
+    char *token = strtok_r(buffer, " ", &sp);
+
+    for (int i = 0; i < w_count; ++i) {
+        struct word word = get_word_struct(token);
+        result.data[i] = word;
+        token = strtok_r(NULL, " ", &sp);
+    }
+    free(buffer);
+    return result;
+}
+
+struct word get_word_struct(const char* chars){
+    struct word word;
+    word.data = strdup(chars);
+    return word;
+}
 
 int str_split_count(char* text, char* delimiters){
     if(text == NULL || *text == '\0') return 0;

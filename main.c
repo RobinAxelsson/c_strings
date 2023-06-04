@@ -248,10 +248,49 @@ void Test_str_trim(int* tests, int* passed){
     test_str_equal("my bad", my_bad, "trim", tests, passed);
 }
 
+void Test_get_struct(int* tests, int* passed){
+    struct word w1= get_word_struct("Hello");
+    test_str_equal("Hello", w1.data, "word struct", tests, passed);
+
+    struct sentence s1 = get_sentence_struct("Hello Earth");
+    (*tests)++;
+    if(s1.word_count == 2) (*passed)++;
+    else printf("word count s1 failed");
+
+    test_str_equal("Hello", s1.data[0].data, "sentence struct 1", tests, passed);
+    test_str_equal("Earth", s1.data[1].data, "sentence struct 2", tests, passed);
+
+    struct paragraph p1 = get_paragraph_struct("Hola Mujeres. Que pasa?");
+    test_str_equal("Hola", p1.data[0].data[0].data, "paragraph struct 1", tests, passed);
+    test_str_equal("Mujeres", p1.data[0].data[1].data, "paragraph struct 1", tests, passed);
+    test_str_equal("Que", p1.data[1].data[0].data, "paragraph struct 2", tests, passed);
+    test_str_equal("pasa?", p1.data[1].data[1].data, "paragraph struct 2", tests, passed);
+
+    struct document d1 = get_document_struct("Welcome baby. This is great\nYou are back. Yes");
+    test_str_equal("Welcome", d1.data[0].data[0].data[0].data, "document struct 1", tests, passed);
+
+    struct document d2 = get_document_struct("Hello world");
+    test_str_equal("Hello", d2.data[0].data[0].data[0].data, "document struct 2 hello", tests, passed);
+}
+
+void Test_token_count(int* tests, int* passed){
+    int count2 = count_tokens("1\n6", "\n");
+    (*tests)++;
+    if(count2 == 2) (*passed)++;
+    else printf("count tokens failed expected 2\n");
+
+    int count1 = count_tokens("1.2.3.4.5.6", ".");
+    (*tests)++;
+    if(count1 == 6) (*passed)++;
+    else printf("count tokens failed expected 6\n");
+}
+
 int main() {
     int tests = 0;
     int passed = 0;
 
+    Test_token_count(&tests, &passed);
+    Test_get_struct(&tests, &passed);
     TestIntResult((FuncInt) str_word_count, "count_words__3_words__3", "Hello counting words", 3, &tests, &passed);
     TestIntResult((FuncInt) str_word_count, "count_words__5_words_newline__5", "Hello world!\nYou are great", 5, &tests, &passed);
     TestIntResult((FuncInt) str_word_count, "count_words__5_words_extra_newline__5", "Hello world!\n\nYou are great", 5, &tests, &passed);
