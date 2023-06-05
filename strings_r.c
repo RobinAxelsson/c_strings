@@ -20,6 +20,17 @@ int count_tokens(const char* text, const char* delimiters){
     return token_count;
 }
 
+char* strdup(const char* str) {
+    size_t len = strlen(str) + 1;
+    char* new_str = (char*)malloc(len);
+
+    if (new_str == NULL) {
+        return NULL;
+    }
+
+    return strcpy(new_str, str);
+}
+
 struct document get_document_struct(const char* text){
     struct document result;
     result.paragraph_count = count_tokens(text, "\n");
@@ -45,6 +56,7 @@ struct document get_document_struct(const char* text){
 struct paragraph get_paragraph_struct(const char* text){
     struct paragraph result;
     int s_count = count_tokens(text, ".");
+    result.sentence_count = s_count;
     result.data = malloc(sizeof(struct sentence) * s_count);
     if(result.data == NULL){
         struct paragraph error = { .data = NULL, .sentence_count = -1 };
@@ -472,5 +484,3 @@ int char_is_delimiter(char character, char* delimiters){
 char** doc_get_words(char* text){
     return str_splitr(text, " ", '\0');
 };
-
-//
