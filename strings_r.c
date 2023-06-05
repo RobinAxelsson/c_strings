@@ -31,6 +31,34 @@ char* strdup(const char* str) {
     return strcpy(new_str, str);
 }
 
+char* string_join(char **strings, int len, char join_char){
+    unsigned int total_length = 0;
+    for (int i = 0; i < len; ++i) {
+        total_length += strlen(strings[i]);
+    }
+    total_length += (len - 1);
+    char *result = malloc(sizeof(char) * (total_length + 1));
+
+    int inner_i = 0;
+    int i = 0;
+    while (i < total_length) {
+        unsigned int length = strlen(strings[inner_i]);
+        for (int j = 0; j < length; ++j) {
+            result[i] = strings[inner_i][j];
+            i++;
+        }
+        inner_i++;
+        if(i != (total_length - 1))
+        {
+            result[i] = join_char;
+            i++;
+        }
+    }
+    result[total_length] = '\0';
+
+    return result;
+}
+
 struct document get_document_struct(const char* text){
     struct document result;
     result.paragraph_count = count_tokens(text, "\n");
@@ -420,7 +448,8 @@ int str_equal(char* strA, char* strB){
     if(*strA == '\0' && *strB == '\0') return 1;
     if(strA == NULL || strB == NULL) return 0;
     int count = str_length(strA);
-    if(count != str_length(strB)) return 0;
+    int countB = str_length(strB);
+    if(count != countB) return 0;
 
     for (int i = 0; i < count; ++i) {
         if(strA[i] != strB[i]){
@@ -484,3 +513,75 @@ int char_is_delimiter(char character, char* delimiters){
 char** doc_get_words(char* text){
     return str_splitr(text, " ", '\0');
 };
+
+int lexicographic_sort(const char* a, const char* b) {
+    unsigned int a_length = strlen(a);
+    unsigned int b_length = strlen(b);
+    unsigned int shortest = a_length < b_length ? a_length : b_length;
+
+    for (int i = 0; i < shortest; ++i) {
+        char a_char = a[i];
+        char b_char = b[i];
+        if(a_char > b_char){
+            return 1;
+        }
+        if(a_char < b_char) return 0;
+    }
+    if(a_length == b_length) return 0;
+    if(a_length > b_length) return 1;
+    return 0;
+}
+
+int lexicographic_sort_reverse(const char* a, const char* b) {
+    return lexicographic_sort(a,b) < 1;
+}
+
+int sort_by_length(const char* a, const char* b) {
+    unsigned int a_length = strlen(a);
+    unsigned int b_length = strlen(b);
+    if(a_length > b_length) return 1;
+    if(a_length < b_length) return 0;
+    return lexicographic_sort(a, b);
+}
+
+int count_distinct_char(const char* str) {
+    int char_positions[26];
+    for (int i = 0; i < 26; ++i) {
+        char_positions[i] = 0;
+    }
+    unsigned int str_length = strlen(str);
+
+    for (int i = 0; i < str_length; ++i) {
+        if(char_positions[str[i] - 97] == 0){
+            char_positions[str[i] - 97] = 1;
+        }
+    }
+
+    int dst_length = 0;
+    for (int i = 0; i < 26; ++i) {
+        if(char_positions[i] == 1) dst_length++;
+    }
+
+    return dst_length;
+}
+
+int sort_by_number_of_distinct_characters(const char* a, const char* b) {
+    unsigned int a_length = count_distinct_char(a);
+    unsigned int b_length = count_distinct_char(b);
+    if(a_length > b_length) return 1;
+    if(a_length < b_length) return 0;
+    return lexicographic_sort(a, b);
+}
+
+void string_sort(char** arr,const int len,int (*cmp_func)(const char* a, const char* b)){
+    char temp[2500];
+    for (int i = 0; i < len; ++i) {
+        for (int j = 0; j < len -1 -i; j++) {
+            if(cmp_func(arr[j], arr[j + 1]) > 0){
+                strcpy(temp, arr[j]);
+                strcpy(arr[j], arr[j + 1]);
+                strcpy(arr[j + 1], temp);
+            }
+        }
+    }
+}

@@ -45,6 +45,12 @@ int char_is_delimiter(char character, char* delimiters);
 
 int str_split_count(char* text, char* delimiters);
 
+char** str_splitr(char* text, char* delimiters, char terminator);
+
+char* string_join(char **strings, int len, char join_char);
+
+int count_distinct_char(const char* str);
+
 char**** get_document(char* text);
 
 char*** get_sentences(char* text);
@@ -60,6 +66,16 @@ char* str_left_trim(char* source, char* characters);
 char* str_right_trim(char* source, char* characters);
 
 void str_to_lower_in_place(char* string);
+
+int lexicographic_sort(const char* a, const char* b);
+
+int lexicographic_sort_reverse(const char* a, const char* b);
+
+int sort_by_length(const char* a, const char* b);
+
+int sort_by_number_of_distinct_characters(const char* a, const char* b);
+
+void string_sort(char** arr,const int len,int (*cmp_func)(const char* a, const char* b));
 
 char** doc_get_words(char* text);
 

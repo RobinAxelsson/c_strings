@@ -26,6 +26,16 @@ void test_str_equal(char* expected, char* result, char* name, int* tests, int* p
     }
 }
 
+void test_int_equal(int expected, int result, char* name, int* tests, int* passed){
+    (*tests)++;
+    if(expected == result){
+        (*passed)++;
+    }
+    else{
+        printf("Fail: %s, expected: %d, result: %d\n", name, expected, result);
+    }
+}
+
 int test_str_copy_hello(){
     char* source = "Hello";
     char target[6];
@@ -285,10 +295,89 @@ void Test_token_count(int* tests, int* passed){
     else printf("count tokens failed expected 6\n");
 }
 
+void Test_string_sort(int *tests, int *passed){
+    char **input = str_splitr("wkue qoi sbv fekls", " ", '\0');
+
+    string_sort(input, 4, lexicographic_sort);
+    test_str_equal("fekls", input[0], "fekls string_sort lex", tests, passed);
+    test_str_equal("qoi", input[1], "qoi string_sort lex", tests, passed);
+    test_str_equal("sbv", input[2], "sbv string_sort lex", tests, passed);
+    test_str_equal("wkue", input[3], "wkue string_sort lex", tests, passed);
+
+    string_sort(input, 4, lexicographic_sort_reverse);
+    test_str_equal("wkue", input[0], "string_sort reverse", tests, passed);
+    test_str_equal("sbv", input[1], "string_sort reverse", tests, passed);
+    test_str_equal("qoi", input[2], "string_sort reverse", tests, passed);
+    test_str_equal("fekls", input[3], "string_sort reverse", tests, passed);
+
+    string_sort(input, 4, sort_by_length);
+    test_str_equal("qoi", input[0], "qoi string_sort length", tests, passed);
+    test_str_equal("sbv", input[1], "sbv string_sort length", tests, passed);
+    test_str_equal("wkue", input[2], "wkue string_sort length", tests, passed);
+    test_str_equal("fekls", input[3], "fekls string_sort length", tests, passed);
+
+    char** arr = str_splitr("abbbbbc aa abcd ab", " ", '\0');
+    string_sort(arr, 4, sort_by_number_of_distinct_characters);
+    test_str_equal("aa", arr[0], "aa string_sort distinct length", tests, passed);
+    test_str_equal("ab", arr[1], "ab string_sort distinct length", tests, passed);
+    test_str_equal("abbbbbc", arr[2], "abbbbbc string_sort distinct length", tests, passed);
+    test_str_equal("abcd", arr[3], "abcd string_sort distinct length", tests, passed);
+
+    char** arr2 = str_splitr("aab aabbc aabb aa", " ", '\0');
+    string_sort(arr2, 4, lexicographic_sort);
+    test_str_equal("aa", arr2[0], "aa sort lexicographic_sort", tests, passed);
+    test_str_equal("aab", arr2[1], "aa sort lexicographic_sort", tests, passed);
+    test_str_equal("aabb", arr2[2], "aa sort lexicographic_sort", tests, passed);
+    test_str_equal("aabbc", arr2[3], "aa sort lexicographic_sort", tests, passed);
+
+    char** arr3 = str_splitr("ibahqaceux prmv ovsylj ta eovfkgikn mrhgpexi s gqrhdd wfy uwhgessrv kcm gl zgjhycobhl njzjhi lchexnrzbs mch n srftz umbtxle ygvfe wfnonbs wfnqxsmwk k ajwgxxou u yatmpuf qmbhl vjfbvq epjboyvq bouuckp yhyzqjsltz opqtgauu smstanofz qxmowfyq t fhgwcp zjyrysk hafgh f kbbkt dk lrvn", " ", '\0');
+
+    string_sort(arr3, 42, lexicographic_sort);
+    char *join_lex_sort = string_join(arr3, 42, ' ');
+    test_str_equal("ajwgxxou bouuckp dk eovfkgikn epjboyvq f fhgwcp gl gqrhdd hafgh ibahqaceux k kbbkt kcm lchexnrzbs lrvn mch mrhgpexi n njzjhi opqtgauu ovsylj prmv qmbhl qxmowfyq s smstanofz srftz t ta u umbtxle uwhgessrv vjfbvq wfnonbs wfnqxsmwk wfy yatmpuf ygvfe yhyzqjsltz zgjhycobhl zjyrysk", join_lex_sort, "join lex sort", tests, passed);
+
+    string_sort(arr3, 42, lexicographic_sort_reverse);
+    char *join_lex_sort_reverse = string_join(arr3, 42, ' ');
+    test_str_equal("zjyrysk zgjhycobhl yhyzqjsltz ygvfe yatmpuf wfy wfnqxsmwk wfnonbs vjfbvq uwhgessrv umbtxle u ta t srftz smstanofz s qxmowfyq qmbhl prmv ovsylj opqtgauu njzjhi n mrhgpexi mch lrvn lchexnrzbs kcm kbbkt k ibahqaceux hafgh gqrhdd gl fhgwcp f epjboyvq eovfkgikn dk bouuckp ajwgxxou", join_lex_sort_reverse, "join lex sort reverse", tests, passed);
+
+    string_sort(arr3, 42, sort_by_length);
+    char *join_lex_sort_length = string_join(arr3, 42, ' ');
+    test_str_equal("f k n s t u dk gl ta kcm mch wfy lrvn prmv hafgh kbbkt qmbhl srftz ygvfe fhgwcp gqrhdd njzjhi ovsylj vjfbvq bouuckp umbtxle wfnonbs yatmpuf zjyrysk ajwgxxou epjboyvq mrhgpexi opqtgauu qxmowfyq eovfkgikn smstanofz uwhgessrv wfnqxsmwk ibahqaceux lchexnrzbs yhyzqjsltz zgjhycobhl", join_lex_sort_length, "join lex sort length", tests, passed);
+
+    string_sort(arr3, 42, sort_by_number_of_distinct_characters);
+    char *join_lex_sort_distinct_length = string_join(arr3, 42, ' ');
+    test_str_equal("f k n s t u dk gl ta kbbkt kcm mch wfy hafgh lrvn prmv gqrhdd njzjhi qmbhl srftz vjfbvq ygvfe bouuckp fhgwcp ovsylj wfnonbs zjyrysk ajwgxxou opqtgauu qxmowfyq umbtxle yatmpuf eovfkgikn epjboyvq mrhgpexi smstanofz uwhgessrv wfnqxsmwk yhyzqjsltz ibahqaceux zgjhycobhl lchexnrzbs", join_lex_sort_distinct_length, "join lex sort length", tests, passed);
+
+    // char** arr4 = str_splitr("hjzzwdq upsovufynjgyndaslodyexwlgxmfbdtxunmphtq ewwrcyknmnnsmmetjsamvvkriyhrrznyvjpxjznvpcobouw mwmkrydbwmsqlhohsdgbftxwylzohyovudf bjryxmojteqmhypmumkszkgiiveea ubwmzuypdttvhd xrnl hnmovwlbalnxmjlodjfiebdmezlvoyzwlnkjjvkmi jujukofsxltazxbkuqjumw yhtvshdtsz okrvcqgxsgwusqkbmyawwhrrbyuvstz fsbjihgbpcvivhljfnfdvyuyyqtqlvwtnzcwjlx puikbwuijbl affaxariv bjpghyreygahrbdnjm utqbaryak wzkhoqomhulpuuivxvglmcgcdgvdhflffvmvnckwwxm runqsvbexiicqghxlsesqqqds cqxoiqkxgcshgrrrvixchkxmf evszvupu akvxqxqzgjtxfdwjmggylvfgo divztvjqtbnldtuwsbbolnx", " ", '\0');
+
+//    string_sort(arr4, 22, sort_by_number_of_distinct_characters);
+//    char *join_arr4_lex_sort_distinct_length = string_join(arr4, 22, ' ');
+//    test_str_equal("xrnl affaxariv evszvupu hjzzwdq yhtvshdtsz puikbwuijbl utqbaryak ubwmzuypdttvhd bjpghyreygahrbdnjm cqxoiqkxgcshgrrrvixchkxmf divztvjqtbnldtuwsbbolnx jujukofsxltazxbkuqjumw runqsvbexiicqghxlsesqqqds akvxqxqzgjtxfdwjmggylvfgo hnmovwlbalnxmjlodjfiebdmezlvoyzwlnkjjvkmi okrvcqgxsgwusqkbmyawwhrrbyuvstz wzkhoqomhulpuuivxvglmcgcdgvdhflffvmvnckwwxm mwmkrydbwmsqlhohsdgbftxwylzohyovudf bjryxmojteqmhypmumkszkgiiveea fsbjihgbpcvivhljfnfdvyuyyqtqlvwtnzcwjlx ewwrcyknmnnsmmetjsamvvkriyhrrznyvjpxjznvpcobouw upsovufynjgyndaslodyexwlgxmfbdtxunmphtq", join_arr4_lex_sort_distinct_length, "join lex sort length", tests, passed);
+}
+
+void Test_str_join(int *tests, int *passed){
+    char **text_array = str_splitr("Hello World, mother fucker", " ", '\0');
+    char *join = string_join(text_array, 4, ' ');
+    test_str_equal("Hello World, mother fucker", join, "string join", tests, passed);
+}
+
+void Test_count_unique_char(int *tests, int *passed){
+    int distinct1 = count_distinct_char("njzjhi");
+    test_int_equal(5, distinct1, "count disinct", tests, passed);
+
+    int distinct_z = count_distinct_char("z");
+    test_int_equal(1, distinct_z, "count disinct", tests, passed);
+
+    int distinct_y = count_distinct_char("y");
+    test_int_equal(1, distinct_y, "count disinct", tests, passed);
+}
+
 int main() {
     int tests = 0;
     int passed = 0;
-
+    Test_count_unique_char(&tests, &passed);
+    Test_str_join(&tests, &passed);
+    Test_string_sort(&tests, &passed);
     Test_token_count(&tests, &passed);
     Test_get_struct(&tests, &passed);
     TestIntResult((FuncInt) str_word_count, "count_words__3_words__3", "Hello counting words", 3, &tests, &passed);
@@ -303,25 +392,25 @@ int main() {
     TestIntResult((FuncInt) str_length, "count_chars__words__5", "abcde", 5, &tests, &passed);
     TestIntResult((FuncInt) str_length, "count_chars__empty__5", "", 0, &tests, &passed);
 
-//    TestStrResult((FuncStr)str_to_upper, "to upper 1","HELLO WORLD", "HELLO WORLD", &tests, &passed);
-//    TestStrResult((FuncStr)str_to_upper, "to upper 2","hello world", "HELLO WORLD", &tests, &passed);
-//    TestStrResult((FuncStr)str_to_upper, "to upper 3","hello !Wld...", "HELLO !WLD...", &tests, &passed);
-//    TestStrResult((FuncStr) str_to_lower, "to lower 1", "Hello !Wld...", "hello !wld...", &tests, &passed);
+    TestStrResult((FuncStr)str_to_upper, "to upper 1","HELLO WORLD", "HELLO WORLD", &tests, &passed);
+    TestStrResult((FuncStr)str_to_upper, "to upper 2","hello world", "HELLO WORLD", &tests, &passed);
+    TestStrResult((FuncStr)str_to_upper, "to upper 3","hello !Wld...", "HELLO !WLD...", &tests, &passed);
+    TestStrResult((FuncStr) str_to_lower, "to lower 1", "Hello !Wld...", "hello !wld...", &tests, &passed);
 
-//    TestBoolResult((FuncNoArgs) test_str_copy_hello, "str_copy 1", 1, &tests, &passed);
-//    TestBoolResult((FuncNoArgs) test_str_copy_hell, "str_copy 2", 1, &tests, &passed);
-//    TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
-//
-//    TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
-//
-//    Test_doc_get_words("get words", &tests, &passed);
-//    Test_doc_get_paragraphs("get paragraphs", &tests, &passed);
-//    Test_doc_contains("contains 1", &tests, &passed);
-//    Test_get_sentence(&tests, &passed);
+    TestBoolResult((FuncNoArgs) test_str_copy_hello, "str_copy 1", 1, &tests, &passed);
+    TestBoolResult((FuncNoArgs) test_str_copy_hell, "str_copy 2", 1, &tests, &passed);
+    TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
+
+    TestBoolResult((FuncNoArgs) test_str_reverse_Abc, "reverse 1", 1, &tests, &passed);
+
+    Test_doc_get_words("get words", &tests, &passed);
+    Test_doc_get_paragraphs("get paragraphs", &tests, &passed);
+    Test_doc_contains("contains 1", &tests, &passed);
+    Test_get_sentence(&tests, &passed);
     Test_doc_structure(&tests, &passed);
-//    Test_str_trim(&tests, &passed);
-//    Test_str_left_trim(&tests, &passed);
-//    Test_str_right_trim(&tests, &passed);
+    Test_str_trim(&tests, &passed);
+    Test_str_left_trim(&tests, &passed);
+    Test_str_right_trim(&tests, &passed);
     printf("%d/%d tests passed", passed, tests);
     return 0;
 }
