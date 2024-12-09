@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <malloc.h>
-#include "strings_r.h"
+#include "../src/strings_r.h"
 
 typedef int (*FuncInt)(void*);
 typedef char* (*FuncStr)(void*);
